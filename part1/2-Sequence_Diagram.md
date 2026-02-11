@@ -115,7 +115,7 @@ sequenceDiagram
     participant PM as PlaceModel
     participant DB as Persistence
 
-    C->>API: GET /places?state=CA&min_price=100
+    C->>API: GET /places?state=AQ&min_price=50
     API->>PS: query_places(filters)
     PS->>PM: filter(state,min_price)
     PM->>DB: SELECT * FROM places WHERE...
@@ -127,8 +127,8 @@ sequenceDiagram
 ```
 
 ### Flux étape par étape :
-- Client → API: GET /places?state=CA&price_min=100
-- API → PlaceService: query_places(filters={state:'CA', price_min:100})
+- Client → API: GET /places?state=AQ&price_min=50
+- API → PlaceService: query_places(filters={state:'AQ', price_min:50})
 - PlaceService → PlaceModel: filter_places(filters)
 - PlaceModel → DB: SELECT * FROM places WHERE state=? AND price>=?
 - DB → PlaceModel: [raw_places]
@@ -136,3 +136,4 @@ sequenceDiagram
 - PlaceModel → PlaceService: [place_dicts]
 - PlaceService → API: 200 {places: [place_dicts], count: N}
 - API → Client: JSON réponse paginée
+
