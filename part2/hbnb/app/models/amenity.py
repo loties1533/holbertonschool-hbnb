@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Amenity - HBnB amenity model (Wi-Fi, Parking, etc.)
+Fields: name(max 50)
+Relationships: many-to-many with Place (Place.add_amenity)
+"""
 from .basemodel import BaseModel
 
 class Amenity(BaseModel):

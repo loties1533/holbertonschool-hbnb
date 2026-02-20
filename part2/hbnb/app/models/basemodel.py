@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-
+"""
+BaseModel - HBnB base class for all models
+Fields: id(UUID), created_at, updated_at
+Methods: save/delete/get/get_all/update/to_dict (repo integration)
+"""
 import uuid
 from datetime import datetime
 from app.persistence.repository import InMemoryRepository
@@ -16,6 +20,7 @@ class BaseModel:
             if hasattr(self, key):
                 setattr(self, key, value)
 
+        self.save()
     
     def save(self):
         self.updated_at = datetime.now()
