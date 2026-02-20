@@ -30,8 +30,7 @@ class HBnBFacade:
 
     # récup tous les utilisateur
     def get_all_users(self):
-        users = self.user_repo.get_all()
-        return [user.to_dict() for user in users]
+        return self.user_repo.get_all()
 
     # mettre à jour un utilisateur
     def update_user(self, user_id, data):
