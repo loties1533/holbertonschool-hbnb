@@ -20,11 +20,9 @@ class BaseModel:
             if hasattr(self, key):
                 setattr(self, key, value)
 
-        self.save()
     
     def save(self):
         self.updated_at = datetime.now()
-        _repository.add(self)
 
     def delete(self):
         _repository.delete(self.id)
