@@ -14,12 +14,25 @@ class Place(BaseModel):
 
         if not title or len(title) > 100:
             raise ValueError("Title required.")
+
+        if not isinstance(price, (float, int)):
+            raise ValueError("Price must be an integer or of a float.")
+
         if price <= 0:
             raise ValueError("Price must be positive.")
+
+        if not isinstance(latitude, (float, int)):
+            raise ValueError("Latitude must be an integer or a float.")
+
         if not -90 <= latitude <= 90:
             raise ValueError("latitude -90 to 90")
+
+        if not isinstance(longitude, (float, int)):
+            raise ValueError("Longitude must be an integer or a float.")
+
         if not -180 <= longitude <= 180:
             raise ValueError("longitude -180 to 180")
+            
         if not isinstance(owner, User):
             raise ValueError("owner must be User instance")
 
