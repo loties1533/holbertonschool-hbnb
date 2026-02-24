@@ -1,12 +1,10 @@
 #!/usr/bin/python3
-
-
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
 api = Namespace('users', description='User operations')
 
-# Modèle pour validation et doc Swagger
+# Define the user model for input validation and documentation
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
@@ -46,7 +44,6 @@ class UserList(Resource):
 
 @api.route('/<user_id>')
 class UserResource(Resource):
-
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
@@ -59,7 +56,7 @@ class UserResource(Resource):
     @api.expect(user_update_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
-    @api.response(400, 'Email already registered')
+    @api.response(400, 'Invalid input data')
     def put(self, user_id):
         """Update user information"""
         user = facade.get_user(user_id)
@@ -73,7 +70,6 @@ class UserResource(Resource):
             if existing:
                 return {'error': 'Email already registered'}, 400
 
-        facade.update_user(user_id, data)
         updated_user = facade.update_user(user_id, data)
         return {
             'id': updated_user.id,
