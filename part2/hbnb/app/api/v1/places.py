@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 #!/usr/bin/python3
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
@@ -53,13 +51,13 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        place = facade.get_all_places()
+        places = facade.get_all_places()
         return [{
             'id': p.id,
             'title': p.title,
             'latitude': p.latitude,
             'longitude': p.longitude
-        } for p in place], 200
+        } for p in places], 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -99,4 +97,3 @@ class PlaceResource(Resource):
             return {'message': 'Place updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
->>>>>>> Stashed changes
