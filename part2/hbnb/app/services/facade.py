@@ -36,7 +36,3 @@ class HBnBFacade:
     def update_user(self, user_id, data):
         self.user_repo.update(user_id, data)
         return self.user_repo.get(user_id)
-
-
-# l'instance globale de la façade
-facade = HBnBFacade()
