@@ -51,7 +51,7 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        place = facade.get_all_places()
+        places = facade.get_all_places()
         return [{
             'id': p.id,
             'title': p.title,
@@ -94,6 +94,6 @@ class PlaceResource(Resource):
             updated_place = facade.update_place(place_id, api.payload)
             if not updated_place:
                 return {'error': 'Place not found'}, 404
-            return {'message': 'Place updated succdessfully'}, 200
+            return {'message': 'Place updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
