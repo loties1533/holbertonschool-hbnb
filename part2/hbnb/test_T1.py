@@ -4,10 +4,10 @@ from app.models.amenity import Amenity
 from app.models.review import Review
 
 def test_user_creation():
-    user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
+    user = User(first_name="antoine", last_name="Doe", email="john.doe@example.com")
     assert user.first_name == "John"
     assert user.last_name == "Doe"
-    assert user.email == "john.doe@example.com"
+    assert user.email == "john.doe@chocolatine.com"
     assert user.is_admin is False  
     print("User creation test passed!")
 
@@ -25,7 +25,6 @@ def test_place_creation():
     assert place.price == 100
     print("Place creation and relationship test passed!")
 
-# Tester la classe d'agrément
 def test_amenity_creation():
     amenity = Amenity(name="Wi-Fi")
     assert amenity.name == "Wi-Fi"
