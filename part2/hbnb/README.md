@@ -24,7 +24,7 @@ Voici comment les entités interagissent entre elles au sein de la logique méti
 ### Relations et Interactions
 Voici comment les entités interagissent entre elles au sein de la logique métier :
 
-```text
+```
   [ User ] <------- (Propriétaire) ------- [ Place ]
      |                                       |
      |                                       |
@@ -35,6 +35,7 @@ Voici comment les entités interagissent entre elles au sein de la logique méti
                                              |
                                              |
   [ Amenity ] <--- (Plusieurs à Plusieurs) --+
+```
 *User / Place : Relation 1:N (Un utilisateur peut posséder plusieurs lieux)
 
 *Place / Amenity : Relation N:N (Un lieu peut avoir plusieurs équipements, et inversement)
