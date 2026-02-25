@@ -25,7 +25,6 @@ def test_place_creation():
     assert place.price == 100
     print("Place creation and relationship test passed!")
 
-# Tester la classe d'agrément
 def test_amenity_creation():
     amenity = Amenity(name="Wi-Fi")
     assert amenity.name == "Wi-Fi"
