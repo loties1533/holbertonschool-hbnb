@@ -18,9 +18,9 @@ class AmenityList(Resource):
         amenity_data = api.payload
         try:
             new_amenity = facade.create_amenity(amenity_data)
+            return {'id': new_amenity.id, 'name': new_amenity.name}, 201
         except ValueError as e:
             return {'error': str(e)}, 400
-        return {'id': new_amenity.id, 'name': new_amenity.name}, 201
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
@@ -50,6 +50,6 @@ class AmenityResource(Resource):
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
             if not updated_amenity:
                 return {'error': 'Amenity not found'}, 404
-            return {'id': updated_amenity.id, 'name': updated_amenity.name}, 200
+            return {'message': 'Amenity updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400

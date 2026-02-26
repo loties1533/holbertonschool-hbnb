@@ -6,8 +6,26 @@ Fields: name (max 50 chars)
 from .basemodel import BaseModel
 
 class Amenity(BaseModel):
+    """
+    Represents an amenity in the HBnB system.
+
+    Attributes:
+        name (str): The name of the amenity (max 50 chars).
+    """
+
     def __init__(self, name, **kwargs):
+        """
+        Initializes a new Amenity instance.
+
+        Args:
+            name (str): Name of the amenity.
+            **kwargs: Additional base model attributes (id, dates).
+        """
+
+        self._name = None
+
         super().__init__(**kwargs)
+
         self.name = name
 
     @property
@@ -17,5 +35,5 @@ class Amenity(BaseModel):
     @name.setter
     def name(self, value):
         if not value or len(value) > 50:
-            raise ValueError("Amenity name required, max 50 chars")
+            raise ValueError("Amenity name required (max 50 characters).")
         self._name = value
