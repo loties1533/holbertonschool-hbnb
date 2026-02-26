@@ -65,5 +65,5 @@ http://127.0.0.1:5000/api/v1/
 
 Auteurs :
 
-*Batts Antoine (add1ktion) github : https://github.com/add1ktion
+*Bats Antoine (add1ktion) github : https://github.com/add1ktion
 *Laubert alexis (loties1533) github : https://github.com/loties1533
