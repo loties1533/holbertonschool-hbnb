@@ -2,11 +2,12 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review  # Ajout de l'import Review
 
 class HBnBFacade:
     """
-    Facade pour gérer la logique métier des utilisateurs 
-    les autres dépots  pour les taches future
+    Facade pour gérer la logique métier des utilisateurs, places, 
+    amenities et reviews.
     """
     def __init__(self):
         self.user_repo = InMemoryRepository()
@@ -14,8 +15,7 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
-
-    """User methods"""
+    # --- User methods ---
     def create_user(self, user_data):
         """Create a user."""
         user = User(**user_data)
@@ -42,8 +42,7 @@ class HBnBFacade:
         user.update(data)
         return user
 
-
-    """Amenity methods"""
+    # --- Amenity methods ---
     def create_amenity(self, amenity_data):
         """Create an amenity."""
         amenity = Amenity(**amenity_data)
@@ -66,8 +65,7 @@ class HBnBFacade:
         amenity.update(amenity_data)
         return amenity
 
-
-    """Place methods"""
+    # --- Place methods ---
     def create_place(self, place_data):
         """Create a place."""
         owner = self.get_user(place_data.get('owner_id'))
@@ -89,7 +87,7 @@ class HBnBFacade:
 
     def get_place(self, place_id):
         """Get a place by ID."""
-        return self.place_repo.get(place_id)
+        return self.place_repo.get_id(place_id) # Utilise get ou get_id selon ton repo
 
     def get_all_places(self):
         """Get all places."""
@@ -102,3 +100,46 @@ class HBnBFacade:
             return None
         place.update(place_data)
         return place
+
+    # --- Review methods ---
+    def create_review(self, review_data):
+        """Create a review."""
+        user = self.get_user(review_data.get('user_id'))
+        if not user:
+            raise ValueError("User not found")
+
+        place = self.get_place(review_data.get('place_id'))
+        if not place:
+            raise ValueError("Place not found")
+
+        # Lier les objets réels
+        review_data['user'] = user
+        review_data['place'] = place
+        
+        # Nettoyer les IDs pour le constructeur
+        review_data.pop('user_id', None)
+        review_data.pop('place_id', None)
+
+        review = Review(**review_data)
+        self.review_repo.add(review)
+        return review
+
+    def get_review(self, review_id):
+        """Get a review by ID."""
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        """Get all reviews."""
+        return self.review_repo.get_all()
+
+    def update_review(self, review_id, review_data):
+        """Update a review."""
+        review = self.get_review(review_id)
+        if not review:
+            return None
+        review.update(review_data)
+        return review
+
+    def delete_review(self, review_id):
+        """Delete a review."""
+        return self.review_repo.delete(review_id)
