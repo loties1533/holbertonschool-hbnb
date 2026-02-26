@@ -10,29 +10,57 @@ from datetime import datetime
 
 class BaseModel:
     def __init__(self, **kwargs):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+
+        self._id = str(uuid.uuid4())
+        self._created_at = datetime.now()
+        self._updated_at = datetime.now()
 
         for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+            if key == "id":
+                self._id = value
+            elif key == "created_at":
+                self._created_at = datetime.fromisoformat(value) if isinstance(value, str) else value
+            elif key == "updated_at":
+                self._updated_at = datetime.fromisoformat(value) if isinstance(value, str) else value
 
-    
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def created_at(self):
+        return self._created_at
+
+    @property
+    def updated_at(self):
+        return self._updated_at
+
     def save(self):
-        self.updated_at = datetime.now()
+        """
+        Met à jour le timestamp de modification
+        """
+        self._updated_at = datetime.now()
 
     def update(self, data):
+        """
+        Met à jour les attributs à partir d'un dictionnaire
+        """
         for key, value in data.items():
-            if hasattr(self, key) and key not in ['id', 'created_at', 'updated_at']:
-                setattr(self, key, value)
+            if key not in ['id', 'created_at', 'updated_at']:
+
+                attr_name = f"_{key}" if hasattr(self, f"_{key}") else key
+                setattr(self, attr_name, value)
         self.save()
 
     def to_dict(self):
+        """
+        Prépare les données pour JSON
+        """
         result = {}
         for attr, value in self.__dict__.items():
+            key = attr.lstrip('_') 
             if isinstance(value, datetime):
-                result[attr] = value.isoformat()
+                result[key] = value.isoformat()
             else:
-                result[attr] = value
+                result[key] = value
         return result
