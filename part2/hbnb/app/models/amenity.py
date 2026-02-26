@@ -8,14 +8,21 @@ from .basemodel import BaseModel
 class Amenity(BaseModel):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
+ 
         self.name = name
 
     @property
     def name(self):
+        """
+        Getter public (+) pour l'attribut privé (-) _name
+        """
         return self._name
 
     @name.setter
     def name(self, value):
+        """
+        Setter pour valider la donnée avant de l'enregistrer dans _name
+        """
         if not value or len(value) > 50:
             raise ValueError("Amenity name required, max 50 chars")
         self._name = value
