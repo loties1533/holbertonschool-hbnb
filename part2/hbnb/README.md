@@ -71,7 +71,10 @@ Nous utilisons des tests unitaires pour valider la logique métier et les répon
 
 Les tests suivants ont été réalisés pour garantir que l'API rejette les données incorrectes avec les codes d'erreur appropriés (**400 Bad Request**) et gère les ressources manquantes (**404 Not Found**)
 
-```
+#### Rapport de Validation (Edge Cases)
+
+Les tests suivants ont été réalisés pour garantir que l'API rejette les données incorrectes avec les codes d'erreur appropriés (**400 Bad Request**) et gère les ressources manquantes (**404 Not Found**)
+
 | Entité | Scénario de Test | Données d'entrée (Payload) | Résultat Attendu | Résultat Réel | Statut |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **User** | Email invalide | `{"email": "mauvais-format"}` | 400 Bad Request | 400 | ✅ Pass |
@@ -80,7 +83,6 @@ Les tests suivants ont été réalisés pour garantir que l'API rejette les donn
 | **Place** | Latitude hors plage | `{"latitude": 120.0}` | 400 Bad Request | 400 | ✅ Pass |
 | **Review** | Note invalide (Rating > 5) | `{"rating": 6}` | 400 Bad Request | 400 | ✅ Pass |
 | **Global** | Ressource inexistante | `GET /api/v1/users/999` | 404 Not Found | 404 | ✅ Pass |
-```
 
 
 Auteurs :
