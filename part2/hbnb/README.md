@@ -1,6 +1,6 @@
-HBnB Evolution - Partie 2 : Logique Métier et Implémentation de l'API
+## HBnB Evolution - Partie 2 : Logique Métier et Implémentation de l'API
 
-Présentation du Projet
+## Présentation du Projet
 
 Cette phase du projet HBnB consiste à implémenter les fonctionnalités de base de l'application en utilisant Python et Flask. L'objectif est de structurer l'application en couches distinctes pour séparer la logique de présentation de la logique métier, garantissant ainsi une base saine et évolutive.
 
@@ -65,5 +65,6 @@ http://127.0.0.1:5000/api/v1/
 
 Auteurs :
 
-*Batts Antoine (add1ktion) github : https://github.com/add1ktion
+*Bats Antoine (add1ktion) github : https://github.com/add1ktion
+
 *Laubert alexis (loties1533) github : https://github.com/loties1533
