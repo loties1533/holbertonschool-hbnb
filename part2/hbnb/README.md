@@ -1,6 +1,6 @@
 ## HBnB Evolution - Partie 2 : Logique Métier et Implémentation de l'API
 
-#  du Projet
+# Présentation du Projet
 
 Cette phase du projet HBnB consiste à implémenter les fonctionnalités de base de l'application en utilisant Python et Flask. L'objectif est de structurer l'application en couches distinctes pour séparer la logique de présentation de la logique métier, garantissant ainsi une base saine et évolutive.
 
@@ -59,11 +59,11 @@ Nous utilisons des tests unitaires pour valider la logique métier et les répon
 
 (Tests actuels : Création d'utilisateurs, lieux, équipements et validation des relations.)
 
- Documentation de l'API
+📚 Documentation de l'API
 L'API est auto-documentée via Swagger. Une fois le serveur lancé, accédez à la documentation interactive :
 http://127.0.0.1:5000/api/v1/
 
-###  Validation et Tests
+### 🧪 Validation et Tests
 
 Nous utilisons des tests unitaires pour valider la logique métier et les réponses de l'API.
 
@@ -74,18 +74,17 @@ Les tests suivants ont été réalisés pour garantir que l'API rejette les donn
 ```
 | Entité | Scénario de Test | Données d'entrée (Payload) | Résultat Attendu | Résultat Réel | Statut |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **User** | Email invalide | `{"email": "mauvais-format"}` | 400 Bad Request | 400 | Pass |
-| **User** | Champs obligatoires vides | `{"first_name": ""}` | 400 Bad Request | 400 |  Pass |
-| **Place** | Prix négatif | `{"price": -10.5}` | 400 Bad Request | 400 |  Pass |
-| **Place** | Latitude hors plage | `{"latitude": 120.0}` | 400 Bad Request | 400 | Pass |
-| **Review** | Note invalide (Rating > 5) | `{"rating": 6}` | 400 Bad Request | 400 |  Pass |
-| **Global** | Ressource inexistante | `GET /api/v1/users/999` | 404 Not Found | 404 |  Pass |
+| **User** | Email invalide | `{"email": "mauvais-format"}` | 400 Bad Request | 400 | ✅ Pass |
+| **User** | Champs obligatoires vides | `{"first_name": ""}` | 400 Bad Request | 400 | ✅ Pass |
+| **Place** | Prix négatif | `{"price": -10.5}` | 400 Bad Request | 400 | ✅ Pass |
+| **Place** | Latitude hors plage | `{"latitude": 120.0}` | 400 Bad Request | 400 | ✅ Pass |
+| **Review** | Note invalide (Rating > 5) | `{"rating": 6}` | 400 Bad Request | 400 | ✅ Pass |
+| **Global** | Ressource inexistante | `GET /api/v1/users/999` | 404 Not Found | 404 | ✅ Pass |
 ```
 
 
 Auteurs :
 
 *Bats Antoine (add1ktion) github : https://github.com/add1ktion
-
 
 *Laubert alexis (loties1533) github : https://github.com/loties1533
