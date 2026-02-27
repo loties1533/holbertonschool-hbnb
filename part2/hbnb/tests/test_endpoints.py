@@ -32,9 +32,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
 
-    # =========================================================
+
     # POST /api/v1/users/
-    # =========================================================
+
 
     def test_01_create_user_valid(self):
         """Création d'un utilisateur valide -> 201"""
@@ -117,9 +117,9 @@ class TestUserEndpoints(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 400)
 
-    # =========================================================
+
     # GET /api/v1/users/
-    # =========================================================
+
 
     def test_09_get_all_users_empty(self):
         """Liste vide au départ -> 200 avec []"""
@@ -138,9 +138,8 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.get_json()), 0)
 
-    # =========================================================
     # GET /api/v1/users/<user_id>
-    # =========================================================
+
 
     def test_11_get_user_by_id_valid(self):
         """Récupération d'un utilisateur existant -> 200"""
@@ -160,9 +159,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertIn('error', response.get_json())
 
-    # =========================================================
+
     # PUT /api/v1/users/<user_id>
-    # =========================================================
+
 
     def test_13_update_user_valid(self):
         """Mise à jour valide -> 200"""
@@ -234,9 +233,9 @@ class TestAmenityEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
 
-    # =========================================================
+
     # POST /api/v1/amenities/
-    # =========================================================
+
 
     def test_01_create_amenity_valid(self):
         """Création d'une amenity valide -> 201"""
@@ -266,9 +265,9 @@ class TestAmenityEndpoints(unittest.TestCase):
         response = self.client.post('/api/v1/amenities/', json={"name": "A" * 50})
         self.assertEqual(response.status_code, 201)
 
-    # =========================================================
+
     # GET /api/v1/amenities/
-    # =========================================================
+ 
 
     def test_06_get_all_amenities(self):
         """Liste des amenities -> 200"""
@@ -282,9 +281,9 @@ class TestAmenityEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/amenities/')
         self.assertGreater(len(response.get_json()), 0)
 
-    # =========================================================
+
     # GET /api/v1/amenities/<amenity_id>
-    # =========================================================
+
 
     def test_08_get_amenity_by_id_valid(self):
         """Récupération d'une amenity existante -> 200"""
@@ -299,9 +298,9 @@ class TestAmenityEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/amenities/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
 
-    # =========================================================
+
     # PUT /api/v1/amenities/<amenity_id>
-    # =========================================================
+
 
     def test_10_update_amenity_valid(self):
         """Mise à jour valide -> 200"""
@@ -359,9 +358,8 @@ class TestPlaceEndpoints(unittest.TestCase):
         data.update(kwargs)
         return data
 
-    # =========================================================
     # POST /api/v1/places/
-    # =========================================================
+
 
     def test_01_create_place_valid(self):
         """Création d'un place valide -> 201"""
@@ -450,9 +448,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.post('/api/v1/places/', json={"title": "Incomplete"})
         self.assertEqual(response.status_code, 400)
 
-    # =========================================================
+
     # GET /api/v1/places/
-    # =========================================================
+
 
     def test_17_get_all_places(self):
         """Liste des places -> 200"""
@@ -466,9 +464,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/places/')
         self.assertGreater(len(response.get_json()), 0)
 
-    # =========================================================
+
     # GET /api/v1/places/<place_id>
-    # =========================================================
+
 
     def test_19_get_place_by_id_valid(self):
         """Récupération d'un place existant avec owner et amenities -> 200"""
@@ -488,9 +486,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/places/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
 
-    # =========================================================
+
     # PUT /api/v1/places/<place_id>
-    # =========================================================
+
 
     def test_21_update_place_valid(self):
         """Mise à jour valide -> 200"""
@@ -560,9 +558,9 @@ class TestReviewEndpoints(unittest.TestCase):
         data.update(kwargs)
         return data
 
-    # =========================================================
+
     # POST /api/v1/reviews/
-    # =========================================================
+
 
     def test_01_create_review_valid(self):
         """Création d'une review valide -> 201"""
@@ -622,9 +620,9 @@ class TestReviewEndpoints(unittest.TestCase):
         response = self.client.post('/api/v1/reviews/', json={"text": "Nice"})
         self.assertEqual(response.status_code, 400)
 
-    # =========================================================
+
     # GET /api/v1/reviews/
-    # =========================================================
+
 
     def test_11_get_all_reviews(self):
         """Liste des reviews -> 200"""
@@ -638,9 +636,9 @@ class TestReviewEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/reviews/')
         self.assertGreater(len(response.get_json()), 0)
 
-    # =========================================================
+
     # GET /api/v1/reviews/<review_id>
-    # =========================================================
+
 
     def test_13_get_review_by_id_valid(self):
         """Récupération d'une review existante -> 200"""
@@ -658,9 +656,9 @@ class TestReviewEndpoints(unittest.TestCase):
         response = self.client.get('/api/v1/reviews/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
 
-    # =========================================================
+
     # GET /api/v1/places/<place_id>/reviews
-    # =========================================================
+
 
     def test_15_get_reviews_by_place_valid(self):
         """Reviews d'un place existant -> 200 avec reviews"""
@@ -698,9 +696,9 @@ class TestReviewEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [])
 
-    # =========================================================
+    
     # PUT /api/v1/reviews/<review_id>
-    # =========================================================
+    
 
     def test_18_update_review_valid(self):
         """Mise à jour valide -> 200"""
@@ -735,9 +733,9 @@ class TestReviewEndpoints(unittest.TestCase):
         ))
         self.assertEqual(response.status_code, 400)
 
-    # =========================================================
+
     # DELETE /api/v1/reviews/<review_id>
-    # =========================================================
+
 
     def test_22_delete_review_valid(self):
         """Suppression d'une review existante -> 200"""
