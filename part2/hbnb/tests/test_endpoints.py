@@ -12,12 +12,16 @@ from app.persistence.repository import InMemoryRepository
 
 
 def unique_email():
-    """Génère un email unique pour chaque test"""
+    """
+    Génère un email unique pour chaque test
+    """
     return f"test_{uuid.uuid4().hex[:8]}@example.com"
 
 
 def reset_facade():
-    """Remet les repos du facade à zéro entre les tests"""
+    """
+    Remet les repos du facade à zéro entre les tests
+    """
     facade.user_repo = InMemoryRepository()
     facade.place_repo = InMemoryRepository()
     facade.review_repo = InMemoryRepository()
@@ -25,7 +29,9 @@ def reset_facade():
 
 
 class TestUserEndpoints(unittest.TestCase):
-    """Tests pour les endpoints /api/v1/users/"""
+    """
+    Tests pour les endpoints /api/v1/users/
+    """
 
     def setUp(self):
         reset_facade()
@@ -37,7 +43,9 @@ class TestUserEndpoints(unittest.TestCase):
 
 
     def test_01_create_user_valid(self):
-        """Création d'un utilisateur valide -> 201"""
+        """
+        Création d'un utilisateur valide -> 201
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "John",
             "last_name": "Doe",
@@ -50,7 +58,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(data['last_name'], 'Doe')
 
     def test_02_create_user_duplicate_email(self):
-        """Email déjà enregistré -> 400"""
+        """
+        Email déjà enregistré -> 400
+        """
         email = unique_email()
         self.client.post('/api/v1/users/', json={
             "first_name": "John",
@@ -66,7 +76,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertIn('error', response.get_json())
 
     def test_03_create_user_invalid_email_format(self):
-        """Email invalide -> 400"""
+        """
+        Email invalide -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "John",
             "last_name": "Doe",
@@ -74,8 +86,66 @@ class TestUserEndpoints(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 400)
 
+    def test_03b_create_user_invalid_email_no_domain(self):
+        """
+        Email sans domaine (test@) -> 400
+        """
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_03c_create_user_invalid_email_no_name(self):
+        """
+        Email sans nom (@example.com) -> 400
+        """
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "@example.com"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_03d_create_user_invalid_email_no_extension(self):
+        """
+        Email sans extension (test@test) -> 400
+        """
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@test"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_03e_create_user_invalid_email_spaces(self):
+        """
+        Email avec espaces -> 400
+        """
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test @example.com"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_03f_create_user_invalid_email_double_at(self):
+        """
+        Email avec double @ -> 400
+        """
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@@example.com"
+        })
+        self.assertEqual(response.status_code, 400)
+
+
     def test_04_create_user_empty_first_name(self):
-        """Prénom vide -> 400"""
+        """
+        Prénom vide -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "",
             "last_name": "Doe",
@@ -84,7 +154,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_05_create_user_empty_last_name(self):
-        """Nom de famille vide -> 400"""
+        """
+        Nom de famille vide -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "John",
             "last_name": "",
@@ -93,14 +165,18 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_06_create_user_missing_fields(self):
-        """Champs manquants -> 400"""
+        """
+        Champs manquants -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "John"
         })
         self.assertEqual(response.status_code, 400)
 
     def test_07_create_user_first_name_too_long(self):
-        """Prénom > 50 caractères -> 400"""
+        """
+        Prénom > 50 caractères -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "J" * 51,
             "last_name": "Doe",
@@ -109,7 +185,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_08_create_user_last_name_too_long(self):
-        """Nom > 50 caractères -> 400"""
+        """
+        Nom > 50 caractères -> 400
+        """
         response = self.client.post('/api/v1/users/', json={
             "first_name": "John",
             "last_name": "D" * 51,
@@ -122,13 +200,17 @@ class TestUserEndpoints(unittest.TestCase):
 
 
     def test_09_get_all_users_empty(self):
-        """Liste vide au départ -> 200 avec []"""
+        """
+        Liste vide au départ -> 200 avec []
+        """
         response = self.client.get('/api/v1/users/')
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.get_json(), list)
 
     def test_10_get_all_users_after_creation(self):
-        """Liste non vide après création -> 200"""
+        """
+        Liste non vide après création -> 200
+        """
         self.client.post('/api/v1/users/', json={
             "first_name": "Alice",
             "last_name": "Martin",
@@ -142,7 +224,9 @@ class TestUserEndpoints(unittest.TestCase):
 
 
     def test_11_get_user_by_id_valid(self):
-        """Récupération d'un utilisateur existant -> 200"""
+        """
+        Récupération d'un utilisateur existant -> 200
+        """
         post = self.client.post('/api/v1/users/', json={
             "first_name": "Bob",
             "last_name": "Smith",
@@ -154,7 +238,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.get_json()['id'], user_id)
 
     def test_12_get_user_by_id_not_found(self):
-        """ID inexistant -> 404"""
+        """
+        ID inexistant -> 404
+        """
         response = self.client.get('/api/v1/users/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
         self.assertIn('error', response.get_json())
@@ -164,7 +250,9 @@ class TestUserEndpoints(unittest.TestCase):
 
 
     def test_13_update_user_valid(self):
-        """Mise à jour valide -> 200"""
+        """
+        Mise à jour valide -> 200
+        """
         post = self.client.post('/api/v1/users/', json={
             "first_name": "Charlie",
             "last_name": "Brown",
@@ -180,7 +268,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.get_json()['first_name'], 'Charles')
 
     def test_14_update_user_not_found(self):
-        """Mise à jour d'un ID inexistant -> 404"""
+        """
+        Mise à jour d'un ID inexistant -> 404
+        """
         response = self.client.put('/api/v1/users/nonexistent-id-000', json={
             "first_name": "Ghost",
             "last_name": "User",
@@ -189,7 +279,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_15_update_user_duplicate_email(self):
-        """Mise à jour avec email déjà utilisé -> 400"""
+        """
+        Mise à jour avec email déjà utilisé -> 400
+        """
         email1 = unique_email()
         self.client.post('/api/v1/users/', json={
             "first_name": "User1",
@@ -210,7 +302,9 @@ class TestUserEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_16_update_user_invalid_email(self):
-        """Mise à jour avec email invalide -> 400"""
+        """
+        Mise à jour avec email invalide -> 400
+        """
         post = self.client.post('/api/v1/users/', json={
             "first_name": "Dave",
             "last_name": "Jones",
@@ -226,7 +320,9 @@ class TestUserEndpoints(unittest.TestCase):
 
 
 class TestAmenityEndpoints(unittest.TestCase):
-    """Tests pour les endpoints /api/v1/amenities/"""
+    """
+    Tests pour les endpoints /api/v1/amenities/
+    """
 
     def setUp(self):
         reset_facade()
@@ -238,7 +334,9 @@ class TestAmenityEndpoints(unittest.TestCase):
 
 
     def test_01_create_amenity_valid(self):
-        """Création d'une amenity valide -> 201"""
+        """
+        Création d'une amenity valide -> 201
+        """
         response = self.client.post('/api/v1/amenities/', json={"name": "Wi-Fi"})
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
@@ -246,22 +344,30 @@ class TestAmenityEndpoints(unittest.TestCase):
         self.assertEqual(data['name'], 'Wi-Fi')
 
     def test_02_create_amenity_empty_name(self):
-        """Nom vide -> 400"""
+        """
+        Nom vide -> 400
+        """
         response = self.client.post('/api/v1/amenities/', json={"name": ""})
         self.assertEqual(response.status_code, 400)
 
     def test_03_create_amenity_name_too_long(self):
-        """Nom > 50 caractères -> 400"""
+        """
+        Nom > 50 caractères -> 400
+        """
         response = self.client.post('/api/v1/amenities/', json={"name": "A" * 51})
         self.assertEqual(response.status_code, 400)
 
     def test_04_create_amenity_missing_name(self):
-        """Champ name manquant -> 400"""
+        """
+        Champ name manquant -> 400
+        """
         response = self.client.post('/api/v1/amenities/', json={})
         self.assertEqual(response.status_code, 400)
 
     def test_05_create_amenity_name_exactly_50(self):
-        """Nom exactement 50 caractères -> 201"""
+        """
+        Nom exactement 50 caractères -> 201
+        """
         response = self.client.post('/api/v1/amenities/', json={"name": "A" * 50})
         self.assertEqual(response.status_code, 201)
 
@@ -270,13 +376,17 @@ class TestAmenityEndpoints(unittest.TestCase):
  
 
     def test_06_get_all_amenities(self):
-        """Liste des amenities -> 200"""
+        """
+        Liste des amenities -> 200
+        """
         response = self.client.get('/api/v1/amenities/')
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.get_json(), list)
 
     def test_07_get_all_amenities_after_creation(self):
-        """Liste non vide après création -> 200"""
+        """
+        Liste non vide après création -> 200
+        """
         self.client.post('/api/v1/amenities/', json={"name": "Parking"})
         response = self.client.get('/api/v1/amenities/')
         self.assertGreater(len(response.get_json()), 0)
@@ -286,7 +396,9 @@ class TestAmenityEndpoints(unittest.TestCase):
 
 
     def test_08_get_amenity_by_id_valid(self):
-        """Récupération d'une amenity existante -> 200"""
+        """
+        Récupération d'une amenity existante -> 200
+        """
         post = self.client.post('/api/v1/amenities/', json={"name": "Pool"})
         amenity_id = post.get_json()['id']
         response = self.client.get(f'/api/v1/amenities/{amenity_id}')
@@ -294,7 +406,9 @@ class TestAmenityEndpoints(unittest.TestCase):
         self.assertEqual(response.get_json()['name'], 'Pool')
 
     def test_09_get_amenity_by_id_not_found(self):
-        """ID inexistant -> 404"""
+        """
+        ID inexistant -> 404
+        """
         response = self.client.get('/api/v1/amenities/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
 
@@ -303,26 +417,34 @@ class TestAmenityEndpoints(unittest.TestCase):
 
 
     def test_10_update_amenity_valid(self):
-        """Mise à jour valide -> 200"""
+        """
+        Mise à jour valide -> 200
+        """
         post = self.client.post('/api/v1/amenities/', json={"name": "TV"})
         amenity_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/amenities/{amenity_id}', json={"name": "Smart TV"})
         self.assertEqual(response.status_code, 200)
 
     def test_11_update_amenity_not_found(self):
-        """Mise à jour d'un ID inexistant -> 404"""
+        """
+        Mise à jour d'un ID inexistant -> 404
+        """
         response = self.client.put('/api/v1/amenities/nonexistent-id-000', json={"name": "Ghost"})
         self.assertEqual(response.status_code, 404)
 
     def test_12_update_amenity_empty_name(self):
-        """Mise à jour avec nom vide -> 400"""
+        """
+        Mise à jour avec nom vide -> 400
+        """
         post = self.client.post('/api/v1/amenities/', json={"name": "Gym"})
         amenity_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/amenities/{amenity_id}', json={"name": ""})
         self.assertEqual(response.status_code, 400)
 
     def test_13_update_amenity_name_too_long(self):
-        """Mise à jour avec nom > 50 caractères -> 400"""
+        """
+        Mise à jour avec nom > 50 caractères -> 400
+        """
         post = self.client.post('/api/v1/amenities/', json={"name": "Spa"})
         amenity_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/amenities/{amenity_id}', json={"name": "A" * 51})
@@ -330,7 +452,9 @@ class TestAmenityEndpoints(unittest.TestCase):
 
 
 class TestPlaceEndpoints(unittest.TestCase):
-    """Tests pour les endpoints /api/v1/places/"""
+    """
+    Tests pour les endpoints /api/v1/places/
+    """
 
     def setUp(self):
         reset_facade()
@@ -362,7 +486,9 @@ class TestPlaceEndpoints(unittest.TestCase):
 
 
     def test_01_create_place_valid(self):
-        """Création d'un place valide -> 201"""
+        """
+        Création d'un place valide -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place())
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
@@ -370,81 +496,111 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(data['title'], 'Cozy Apartment')
 
     def test_02_create_place_with_amenities(self):
-        """Création avec amenities -> 201"""
+        """
+        Création avec amenities -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(
             amenities=[self.amenity_id]
         ))
         self.assertEqual(response.status_code, 201)
 
     def test_03_create_place_invalid_owner(self):
-        """Owner inexistant -> 400"""
+        """
+        Owner inexistant -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(
             owner_id="nonexistent-owner-id"
         ))
         self.assertEqual(response.status_code, 400)
 
     def test_04_create_place_negative_price(self):
-        """Prix négatif -> 400"""
+        """
+        Prix négatif -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(price=-10.0))
         self.assertEqual(response.status_code, 400)
 
     def test_05_create_place_zero_price(self):
-        """Prix = 0 -> 400"""
+        """
+        Prix = 0 -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(price=0))
         self.assertEqual(response.status_code, 400)
 
     def test_06_create_place_latitude_too_high(self):
-        """Latitude > 90 -> 400"""
+        """
+        Latitude > 90 -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(latitude=91.0))
         self.assertEqual(response.status_code, 400)
 
     def test_07_create_place_latitude_too_low(self):
-        """Latitude < -90 -> 400"""
+        """
+        Latitude < -90 -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(latitude=-91.0))
         self.assertEqual(response.status_code, 400)
 
     def test_08_create_place_longitude_too_high(self):
-        """Longitude > 180 -> 400"""
+        """
+        Longitude > 180 -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(longitude=181.0))
         self.assertEqual(response.status_code, 400)
 
     def test_09_create_place_longitude_too_low(self):
-        """Longitude < -180 -> 400"""
+        """
+        Longitude < -180 -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(longitude=-181.0))
         self.assertEqual(response.status_code, 400)
 
     def test_10_create_place_latitude_boundary_max(self):
-        """Latitude = 90 (limite max) -> 201"""
+        """
+        Latitude = 90 (limite max) -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(latitude=90.0))
         self.assertEqual(response.status_code, 201)
 
     def test_11_create_place_latitude_boundary_min(self):
-        """Latitude = -90 (limite min) -> 201"""
+        """
+        Latitude = -90 (limite min) -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(latitude=-90.0))
         self.assertEqual(response.status_code, 201)
 
     def test_12_create_place_longitude_boundary_max(self):
-        """Longitude = 180 (limite max) -> 201"""
+        """
+        Longitude = 180 (limite max) -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(longitude=180.0))
         self.assertEqual(response.status_code, 201)
 
     def test_13_create_place_longitude_boundary_min(self):
-        """Longitude = -180 (limite min) -> 201"""
+        """
+        Longitude = -180 (limite min) -> 201
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(longitude=-180.0))
         self.assertEqual(response.status_code, 201)
 
     def test_14_create_place_empty_title(self):
-        """Titre vide -> 400"""
+        """
+        Titre vide -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(title=""))
         self.assertEqual(response.status_code, 400)
 
     def test_15_create_place_title_too_long(self):
-        """Titre > 100 caractères -> 400"""
+        """
+        Titre > 100 caractères -> 400
+        """
         response = self.client.post('/api/v1/places/', json=self._valid_place(title="T" * 101))
         self.assertEqual(response.status_code, 400)
 
     def test_16_create_place_missing_required_fields(self):
-        """Champs requis manquants -> 400"""
+        """
+        Champs requis manquants -> 400
+        """
         response = self.client.post('/api/v1/places/', json={"title": "Incomplete"})
         self.assertEqual(response.status_code, 400)
 
@@ -453,13 +609,17 @@ class TestPlaceEndpoints(unittest.TestCase):
 
 
     def test_17_get_all_places(self):
-        """Liste des places -> 200"""
+        """
+        Liste des places -> 200
+        """
         response = self.client.get('/api/v1/places/')
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.get_json(), list)
 
     def test_18_get_all_places_after_creation(self):
-        """Liste non vide après création -> 200"""
+        """
+        Liste non vide après création -> 200
+        """
         self.client.post('/api/v1/places/', json=self._valid_place())
         response = self.client.get('/api/v1/places/')
         self.assertGreater(len(response.get_json()), 0)
@@ -469,7 +629,9 @@ class TestPlaceEndpoints(unittest.TestCase):
 
 
     def test_19_get_place_by_id_valid(self):
-        """Récupération d'un place existant avec owner et amenities -> 200"""
+        """
+        Récupération d'un place existant avec owner et amenities -> 200
+        """
         post = self.client.post('/api/v1/places/', json=self._valid_place(
             amenities=[self.amenity_id]
         ))
@@ -482,7 +644,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(data['owner']['id'], self.owner_id)
 
     def test_20_get_place_by_id_not_found(self):
-        """ID inexistant -> 404"""
+        """
+        ID inexistant -> 404
+        """
         response = self.client.get('/api/v1/places/nonexistent-id-000')
         self.assertEqual(response.status_code, 404)
 
@@ -491,7 +655,9 @@ class TestPlaceEndpoints(unittest.TestCase):
 
 
     def test_21_update_place_valid(self):
-        """Mise à jour valide -> 200"""
+        """
+        Mise à jour valide -> 200
+        """
         post = self.client.post('/api/v1/places/', json=self._valid_place())
         place_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/places/{place_id}', json=self._valid_place(
@@ -500,13 +666,17 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_22_update_place_not_found(self):
-        """Mise à jour d'un ID inexistant -> 404"""
+        """
+        Mise à jour d'un ID inexistant -> 404
+        """
         response = self.client.put('/api/v1/places/nonexistent-id-000',
                                    json=self._valid_place())
         self.assertEqual(response.status_code, 404)
 
     def test_23_update_place_invalid_price(self):
-        """Mise à jour avec prix négatif -> 400"""
+        """
+        Mise à jour avec prix négatif -> 400
+        """
         post = self.client.post('/api/v1/places/', json=self._valid_place())
         place_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/places/{place_id}', json=self._valid_place(
@@ -515,7 +685,9 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_24_update_place_invalid_latitude(self):
-        """Mise à jour avec latitude invalide -> 400"""
+        """
+        Mise à jour avec latitude invalide -> 400
+        """
         post = self.client.post('/api/v1/places/', json=self._valid_place())
         place_id = post.get_json()['id']
         response = self.client.put(f'/api/v1/places/{place_id}', json=self._valid_place(
@@ -525,7 +697,9 @@ class TestPlaceEndpoints(unittest.TestCase):
 
 
 class TestReviewEndpoints(unittest.TestCase):
-    """Tests pour les endpoints /api/v1/reviews/"""
+    """
+    Tests pour les endpoints /api/v1/reviews/
+    """
 
     def setUp(self):
         reset_facade()
