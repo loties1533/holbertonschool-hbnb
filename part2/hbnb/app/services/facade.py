@@ -121,6 +121,7 @@ class HBnBFacade:
 
         review = Review(user=user, place=place, **review_data)
         self.review_repo.add(review)
+        place.add_review(review)
         return review
 
     def get_review(self, review_id):
