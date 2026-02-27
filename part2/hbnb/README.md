@@ -98,7 +98,7 @@ Voici comment les entités interagissent entre elles au sein de la logique méti
 
 ### Prérequis
 
-- Python 3.10+
+- Python 3.10.12
 - pip3
 
 ### Installation des dépendances
