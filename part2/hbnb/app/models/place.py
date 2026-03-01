@@ -9,7 +9,7 @@ from .basemodel import BaseModel
 from .user import User
 
 class Place(BaseModel):
-    def __init__(self, title, price, longitude, latitude, owner, description="", **kwargs):
+    def __init__(self, title, description="", price=0, latitude=0, longitude=0, owner=None, **kwargs):
         self._title = None
         self._price = 0.0
         self._latitude = 0.0
