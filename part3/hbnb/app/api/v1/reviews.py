@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
 api = Namespace('reviews', description='Review operations')
@@ -16,10 +17,16 @@ class ReviewList(Resource):
     @api.expect(review_model, validate=True)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new review"""
+        current_user_id = get_jwt_identity() # L'ID sûr de l'utilisateur
+        review_data = api.payload
+        
+        review_data['user_id'] = current_user_id
+
         try :
-            new_review = facade.create_review(api.payload)
+            new_review = facade.create_review(review_data)
             return {
                 'id': new_review.id,
                 'text': new_review.text,
@@ -62,8 +69,18 @@ class ReviewResource(Resource):
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, review_id):
         """Update a review's information"""
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        
+        review = facade.get_review(review_id)
+        if not review:
+            return {'error': 'Review not found'}, 404
+        if review.user.id != current_user_id and not claims.get('is_admin', False):
+            return {'error': 'Unauthorized action'}, 403
+        
         try:
             updated_review = facade.update_review(review_id, api.payload)
             if not updated_review:
@@ -74,8 +91,19 @@ class ReviewResource(Resource):
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
+    @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+
+        review = facade.get_review(review_id)
+        if not review:
+            return {'error': 'Review not found'}, 404
+        
+        if review.user.id != current_user_id and not claims.get('is_admin', False):
+            return {'error': 'Unauthorized action'}, 403
+
         if not facade.delete_review(review_id):
             return {'error': 'Review not found'}, 404
         return {'message': 'Review deleted successfully'}, 200

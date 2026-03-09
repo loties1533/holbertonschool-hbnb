@@ -4,6 +4,7 @@ User - HBnB user model
 Fields: first_name(max 50), last_name(max 50), email, is_admin(bool)
 Relationships: owner of Places (1:N)
 """
+from app import bcrypt
 import re
 from .basemodel import BaseModel
 
@@ -18,7 +19,7 @@ class User(BaseModel):
         is_admin (bool): Administrative status of the user.
     """
 
-    def __init__(self, first_name, last_name, email, is_admin=False, **kwargs):
+    def __init__(self, first_name, last_name, email, password, is_admin=False, **kwargs):
         """
         Initializes a new User instance.
 
@@ -33,6 +34,9 @@ class User(BaseModel):
         self._first_name = None
         self._last_name = None
         self._email = None
+        self.hash_password(password)
+
+        kwargs.pop('password', None)
 
         super().__init__(**kwargs)
 
@@ -71,6 +75,14 @@ class User(BaseModel):
         if not value or not re.match(email_regex, value):
             raise ValueError("Invalid email format.")
         self._email = value
+
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
 
     @property
     def is_admin(self):
