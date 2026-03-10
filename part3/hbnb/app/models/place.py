@@ -1,31 +1,31 @@
 #!/usr/bin/python3
 """
-Place - HBnB place model
-Fields: title(max 100), description, price, lat/lng, owner(User)
-Relationships: reviews(1:N), amenities(N:N)
-Methods: add/remove amenity/review
+Place - HBnB place model mapped to the database
 """
+from app import db
 from .basemodel import BaseModel
-from .user import User
 
 class Place(BaseModel):
-    def __init__(self, title, price, longitude, latitude, owner, description="", **kwargs):
-        self._title = None
-        self._price = 0.0
-        self._latitude = 0.0
-        self._longitude = 0.0
-        self._owner = None
+    """
+    Represents a place in the HBnB system, stored in the database.
+    """
+    __tablename__ = 'places'
 
+    _title = db.Column('title', db.String(100), nullable=False)
+    _description = db.Column('description', db.String(255))
+    _price = db.Column('price', db.Float, nullable=False)
+    _latitude = db.Column('latitude', db.Float, nullable=False)
+    _longitude = db.Column('longitude', db.Float, nullable=False)
+    _owner_id = db.Column('owner_id', db.String(36), nullable=False)
+
+    def __init__(self, title, price, longitude, latitude, owner_id, description="", **kwargs):
         super().__init__(**kwargs)
-
         self.title = title
+        self.price = price
+        self.longitude = longitude
+        self.latitude = latitude
+        self.owner_id = owner_id # On passe l'ID ici
         self.description = description
-        self.price = float(price)
-        self.longitude = float(longitude)
-        self.latitude = float(latitude)
-        self.owner = owner
-        self.amenities = []
-        self.reviews = []
 
     @property
     def title(self):
@@ -74,26 +74,19 @@ class Place(BaseModel):
         self._longitude = float(value)
 
     @property
-    def owner(self):
-        return self._owner
+    def owner_id(self):
+        return self._owner_id
 
-    @owner.setter
-    def owner(self, value):
-        if not isinstance(value, User):
-            raise ValueError("owner must be User instance")
-        self._owner = value
+    @owner_id.setter
+    def owner_id(self, value):
+        if not isinstance(value, str):
+            raise ValueError("owner_id must be a string (UUID).")
+        self._owner_id = value
 
-    def add_amenity(self, amenity):
-        if amenity not in self.amenities:
-            self.amenities.append(amenity)
-            self.save()
-
-    def remove_amenity(self, amenity):
-        if amenity in self.amenities:
-            self.amenities.remove(amenity)
-            self.save()
-
-    def add_review(self, review):
-        if review not in self.reviews:
-            self.reviews.append(review)
-            self.save()
+    @property
+    def description(self):
+        return self._description
+    
+    @description.setter
+    def description(self, value):
+        self._description = value
