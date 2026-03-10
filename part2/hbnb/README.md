@@ -1,192 +1,54 @@
-# HBnB Evolution - Partie 2 : Logique Métier et Implémentation de l'API
+# HBnB Evolution - Part 2: Business Logic & API
+## 1. Présentation du Projet
 
-## Présentation du Projet
+Ce projet est la deuxième étape de l'application HBnB. Il implémente la logique métier (Business Logic) et une API RESTful en utilisant une architecture en couches.
 
-Cette phase du projet HBnB consiste à implémenter les fonctionnalités de base de l'application en utilisant Python et Flask. L'objectif est de structurer l'application en couches distinctes pour séparer la logique de présentation de la logique métier, garantissant ainsi une base saine et évolutive.
+## 2. Architecture
 
-Le projet permet de gérer les **Utilisateurs (Users)**, les **Lieux (Places)**, les **Avis (Reviews)** et les **Équipements (Amenities)**.
+L'application est structurée comme suit :
 
----
+- Modèles (Models) : Définissent les entités (User, Place, Review, Amenity) et leurs règles de validation.
+- Services (Facade) : Orchestrent les opérations entre l'API et la persistance.
+- API (v1) : Endpoints Flask-RESTx pour interagir avec le système.
+- Persistance : Système de stockage en mémoire (InMemoryRepository) prêt pour une migration SQL.
 
-## Architecture et Logique du Code
+## 3. Installation et Lancement
 
-Le projet repose sur une **Architecture en Couches** et l'utilisation du **Pattern Façade**. Cette approche permet de modifier une partie du code (comme la base de données plus tard) sans impacter les autres couches.
+1. Installer les dépendances : `pip install -r requirements.txt`
+2. Lancer le serveur : `python3 run.py`
+3. Accéder à la documentation Swagger : `http://127.0.0.1:5000/api/v1/`
 
-### Structure en Couches
+## 4. Tests Unitaires (Unittest)
 
-- **Couche de Présentation (API)** : Située dans `app/api/v1/`. Elle définit les routes (endpoints) et gère les entrées/sorties JSON via `flask-restx`.
-- **Couche de Logique Métier** : Située dans `app/models/`. Elle contient les règles de gestion et les entités.
-- **Couche de Persistance** : Gère le stockage des données (actuellement en mémoire via `InMemoryRepository`).
-
-### Le Modèle "Façade"
-
-La Facade sert d'interface unique entre l'API et la logique métier. L'API ne communique jamais directement avec les modèles ou le stockage. Elle demande à la Façade, qui se charge de coordonner les actions entre les différentes entités.
-
----
-
-## Structure du Projet
-
-```
-hbnb/
-├── app/
-│   ├── __init__.py
-│   ├── api/
-│   │   ├── __init__.py
-│   │   └── v1/
-│   │       ├── __init__.py
-│   │       ├── users.py
-│   │       ├── amenities.py
-│   │       ├── places.py
-│   │       └── reviews.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── basemodel.py
-│   │   ├── user.py
-│   │   ├── place.py
-│   │   ├── review.py
-│   │   └── amenity.py
-│   ├── services/
-│   │   ├── __init__.py
-│   │   └── facade.py
-│   └── persistence/
-│       ├── __init__.py
-│       └── repository.py
-├── tests/
-│   ├── __init__.py
-│   └── test_endpoints.py
-├── run.py
-├── config.py
-├── requirements.txt
-└── README.md
-```
-
----
-
-## Relations et Interactions
-
-Voici comment les entités interagissent entre elles au sein de la logique métier :
-
-```
-  [ User ] <------- (Propriétaire) ------- [ Place ]
-     |                                         |
-     |                                         |
- (Auteur)                                  (Cible)
-     |                                         |
-     v                                         v
-  [ Review ] --------------------------------> [ Place ]
-                                               |
-                                               |
-  [ Amenity ] <--- (Plusieurs à Plusieurs) ----+
-```
-
-- **User / Place** : Relation 1:N — Un utilisateur peut posséder plusieurs lieux
-- **Place / Amenity** : Relation N:N — Un lieu peut avoir plusieurs équipements, et inversement
-- **Review** : Un avis lie obligatoirement un utilisateur (`user`) et un lieu (`place`)
-
----
-
-## Concepts Techniques Clés
-
-- **Sérialisation des données** : Conversion des objets complexes en JSON. Une `Place` affiche les détails du propriétaire et non un simple ID.
-- **Opérations CRUD** : Implémentation complète des méthodes de création, lecture, mise à jour. Le DELETE n'est implémenté que pour les Reviews.
-- **Validation Métier** : Auto-validation des modèles (emails valides, limites de caractères, notes entre 1 et 5, coordonnées GPS, etc.)
-- **Découplage** : Indépendance totale entre l'interface API et le mode de stockage grâce à la Façade.
-
----
-
-## Installation et Lancement
-
-### Prérequis
-
-- Python 3.10.12
-- pip3
-
-### Installation des dépendances
+Pour valider la robustesse du code, des tests automatisés ont été mis en place.
+Commande :
 
 ```bash
-pip3 install flask flask-restx
+python3 -m unittest discover tests
+Résultat attendu :
+OK (tests passés avec succès)
 ```
 
-### Lancer le serveur
+## 5. Exemples de Validation (Tests Manuels)
+
+A. Création d'un Utilisateur
+
+Requête :
 
 ```bash
-cd part2/hbnb
-python3 run.py
+curl -X POST "http://127.0.0.1:5000/api/v1/users/" -H "Content-Type: application/json" -d '{"first_name": "Bob", "last_name": "Sponge", "email": "invalid@@email.com"}'
+Résultat (400 Bad Request) :
 ```
-
-Le serveur démarre sur `http://127.0.0.1:5000`
-
----
-
-## Documentation de l'API
-
-L'API est auto-documentée via **Swagger**. Une fois le serveur lancé, accédez à la documentation interactive :
-
+```JSON
+{ "error": "Invalid email format." }
+B. Création d'une Place (Prix négatif)
 ```
-http://127.0.0.1:5000/api/v1/
-```
-
-### Endpoints disponibles
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/v1/users/` | Créer un utilisateur |
-| GET | `/api/v1/users/` | Lister tous les utilisateurs |
-| GET | `/api/v1/users/<id>` | Récupérer un utilisateur |
-| PUT | `/api/v1/users/<id>` | Modifier un utilisateur |
-| POST | `/api/v1/amenities/` | Créer un équipement |
-| GET | `/api/v1/amenities/` | Lister tous les équipements |
-| GET | `/api/v1/amenities/<id>` | Récupérer un équipement |
-| PUT | `/api/v1/amenities/<id>` | Modifier un équipement |
-| POST | `/api/v1/places/` | Créer un lieu |
-| GET | `/api/v1/places/` | Lister tous les lieux |
-| GET | `/api/v1/places/<id>` | Récupérer un lieu avec owner et amenities |
-| PUT | `/api/v1/places/<id>` | Modifier un lieu |
-| GET | `/api/v1/places/<id>/reviews` | Lister les avis d'un lieu |
-| POST | `/api/v1/reviews/` | Créer un avis |
-| GET | `/api/v1/reviews/` | Lister tous les avis |
-| GET | `/api/v1/reviews/<id>` | Récupérer un avis |
-| PUT | `/api/v1/reviews/<id>` | Modifier un avis |
-| DELETE | `/api/v1/reviews/<id>` | Supprimer un avis |
-
----
-
-## Validation et Tests
-
-Les tests unitaires couvrent **toute la chaîne** : API → Facade → Modèle.
-
-### Lancer les tests
+Requête :
 
 ```bash
-cd part2/hbnb
-python3 -m unittest tests/test_endpoints.py -v
+curl -X POST "http://127.0.0.1:5000/api/v1/places/" -H "Content-Type: application/json" -d '{"title": "Cheap House", "price": -50.0, "latitude": 45.0, "longitude": 1.0, "owner_id": "ID_VALIDE"}'
+Résultat (400 Bad Request) :
 ```
-
-### Ce qui est testé (77 tests)
-
-| Entité | Tests |
-|--------|-------|
-| **Users** | Création valide, email dupliqué, formats d'email invalides (sans @, sans domaine, sans extension, avec espaces, double @), noms vides/trop longs, GET liste, GET par ID, PUT update |
-| **Amenities** | Création valide, nom vide/trop long, limite exacte 50 chars, GET liste, GET par ID, PUT update |
-| **Places** | Création valide, owner invalide, prix négatif/zéro, latitude/longitude hors range et aux limites exactes (±90, ±180), titre vide/trop long, GET liste, GET par ID avec owner et amenities, PUT update |
-| **Reviews** | Création valide, rating aux limites (1 et 5), rating invalide (0, 6, -1), texte vide, user/place inexistants, GET par place (vide et non vide), PUT update, DELETE et vérification après suppression |
-
-### Codes de statut testés
-
-- **201** → Création réussie
-- **200** → Récupération / mise à jour / suppression réussie
-- **400** → Données invalides
-- **404** → Ressource inexistante
-
----
-
-## Lien du Projet
-
-[holbertonschool-hbnb](https://github.com/add1ktion/holbertonschool-hbnb.git)
-
----
-
-## Auteurs
-
-- **Bats Antoine** (add1ktion) — [GitHub](https://github.com/add1ktion)
-- **Laubert Alexis** (loties1533) — [GitHub](https://github.com/loties1533)
+```JSON
+{ "error": "Price must be positive." }
+```

@@ -18,8 +18,9 @@ class HBnBFacade:
 
     """User methods"""
     def create_user(self, user_data):
-        """Create a user."""
-        user = User(**user_data)
+        """Create a user with a hashed password."""
+        password = user_data.pop('password')
+        user = User(password=password, **user_data)
         self.user_repo.add(user)
         return user
 
@@ -40,6 +41,8 @@ class HBnBFacade:
         user = self.get_user(user_id)
         if not user:
             return None
+        if 'password' in data:
+            user.hash_password(data.pop('password'))
         user.update(data)
         return user
 
@@ -121,7 +124,6 @@ class HBnBFacade:
 
         review = Review(user=user, place=place, **review_data)
         self.review_repo.add(review)
-        place.add_review(review)
         return review
 
     def get_review(self, review_id):
