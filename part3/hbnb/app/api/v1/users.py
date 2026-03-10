@@ -92,7 +92,7 @@ class UserResource(Resource):
 
         data = api.payload
 
-        if 'email' in data or 'password' in data:
+        if ('email' in data or 'password' in data) and not claims.get('is_admin', False):
             return {'error': 'You cannot modify email or password'}, 400
 
 
