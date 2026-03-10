@@ -18,6 +18,10 @@ class AmenityList(Resource):
     @jwt_required()
     def post(self):
         """Register a new amenity"""
+        claims = get_jwt()
+        if not claims.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+
         amenity_data = api.payload
         try:
             new_amenity = facade.create_amenity(amenity_data)
