@@ -92,6 +92,10 @@ class UserResource(Resource):
 
         data = api.payload
 
+        if 'email' in data or 'password' in data:
+            return {'error': 'You cannot modify email or password'}, 400
+
+
         allowed_fields = ['first_name', 'last_name', 'email', 'password']
         update_data = {k: v for k, v in data.items() if k in allowed_fields}
 
