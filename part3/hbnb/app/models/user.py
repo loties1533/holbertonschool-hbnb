@@ -4,39 +4,27 @@ User - HBnB user model
 Fields: first_name(max 50), last_name(max 50), email, is_admin(bool)
 Relationships: owner of Places (1:N)
 """
-from app import bcrypt
+from app import db, bcrypt
 import re
 from .basemodel import BaseModel
 
 class User(BaseModel):
     """
-    Represents a user in the HBnB system.
-
-    Attributes:
-        first_name (str): The user's first name (max 50 chars).
-        last_name (str): The user's last name (max 50 chars).
-        email (str): Unique email address.
-        is_admin (bool): Administrative status of the user.
+    Represents a user in the HBnB system, mapped to a database table.
     """
+    __tablename__ = 'users'
+
+    _first_name = db.Column('first_name', db.String(50), nullable=False)
+    _last_name = db.Column('last_name', db.String(50), nullable=False)
+    _email = db.Column('email', db.String(255), unique=True, nullable=False)
+    password = db.Column('password', db.String(255), nullable=False)
+    _is_admin = db.Column('is_admin', db.Boolean, default=False, nullable=False)
 
     def __init__(self, first_name, last_name, email, password, is_admin=False, **kwargs):
         """
-        Initializes a new User instance.
-
-        Args:
-            first_name (str): First name of the user.
-            last_name (str): Last name of the user.
-            email (str): Email address of the user.
-            is_admin (bool): Whether the user has admin privileges.
-            **kwargs: Additional base model attributes (id, dates).
+        Initializes a new User instance and hashes the password before storing it.
         """
-
-        self._first_name = None
-        self._last_name = None
-        self._email = None
         self.hash_password(password)
-
-        kwargs.pop('password', None)
 
         super().__init__(**kwargs)
 
@@ -44,6 +32,7 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
+        
 
     @property
     def first_name(self):
@@ -77,11 +66,9 @@ class User(BaseModel):
         self._email = value
 
     def hash_password(self, password):
-        """Hashes the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
 
     @property

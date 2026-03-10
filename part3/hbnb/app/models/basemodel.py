@@ -4,23 +4,24 @@ BaseModel - HBnB base class for all models
 Fields: id(UUID), created_at, updated_at
 Methods: save/delete/get/get_all/update/to_dict (repo integration)
 """
+from app import db
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
+class BaseModel(db.Model):
+    __abstract__ = True
 
-class BaseModel:
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
     def __init__(self, **kwargs):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        super().__init__(**kwargs)
+        if not self.id:
+            self.id = str(uuid.uuid4())
 
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-
-    
     def save(self):
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.now(timezone.utc)
 
     def update(self, data):
         for key, value in data.items():
@@ -30,9 +31,10 @@ class BaseModel:
 
     def to_dict(self):
         result = {}
-        for attr, value in self.__dict__.items():
+        for column in self.__table__.columns:
+            value = getattr(self, column.name)
             if isinstance(value, datetime):
-                result[attr] = value.isoformat()
+                result[column.name] = value.isoformat()
             else:
-                result[attr] = value
+                result[column.name] = value
         return result
