@@ -20,27 +20,12 @@ class ReviewList(Resource):
     @jwt_required()
     def post(self):
         """Register a new review"""
-        current_user_id = get_jwt_identity()
+        current_user_id = get_jwt_identity() # L'ID sûr de l'utilisateur
         review_data = api.payload
-
+        
         review_data['user_id'] = current_user_id
 
-        # Vérifier que la place existe
-        place = facade.get_place(review_data.get('place_id'))
-        if not place:
-            return {'error': 'Place not found'}, 400
-
-        # Vérifier que l'utilisateur ne review pas sa propre place
-        if place.owner.id == current_user_id:
-            return {'error': 'You cannot review your own place'}, 400
-
-        # Vérifier que l'utilisateur n'a pas déjà reviewé cette place
-        existing_reviews = facade.get_reviews_by_place(review_data.get('place_id'))
-        for review in existing_reviews:
-            if review.user.id == current_user_id:
-                return {'error': 'You have already reviewed this place'}, 400
-
-        try:
+        try :
             new_review = facade.create_review(review_data)
             return {
                 'id': new_review.id,
@@ -61,7 +46,6 @@ class ReviewList(Resource):
             'text': r.text,
             'rating': r.rating,
         } for r in reviews], 200
-
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -90,13 +74,13 @@ class ReviewResource(Resource):
         """Update a review's information"""
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-
+        
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
         if review.user.id != current_user_id and not claims.get('is_admin', False):
             return {'error': 'Unauthorized action'}, 403
-
+        
         try:
             updated_review = facade.update_review(review_id, api.payload)
             if not updated_review:
@@ -116,7 +100,7 @@ class ReviewResource(Resource):
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
-
+        
         if review.user.id != current_user_id and not claims.get('is_admin', False):
             return {'error': 'Unauthorized action'}, 403
 

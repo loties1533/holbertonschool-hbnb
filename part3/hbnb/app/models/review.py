@@ -5,9 +5,8 @@ Fields: text, rating(1-5), place(Place), user(User)
 Relationships: belongs_to Place+User (auto-add via place.add_review)
 Methods: update_rating
 """
+from app import db
 from .basemodel import BaseModel
-from .place import Place
-from .user import User
 
 class Review(BaseModel):
     """
@@ -19,30 +18,19 @@ class Review(BaseModel):
         place (Place): The place being reviewed.
         user (User): The user who wrote the review.
     """
+    __tablename__ = 'reviews'
 
-    def __init__(self, text, rating, place, user, **kwargs):
-        """
-        Initializes a new Review instance.
+    _text = db.Column('text', db.String(1024), nullable=False)
+    _rating = db.Column('rating', db.Integer, nullable=False)
+    _place_id = db.Column('place_id', db.String(36), nullable=False)
+    _user_id = db.Column('user_id', db.String(36), nullable=False)
 
-        Args:
-            text (str): Content of the review.
-            rating (int): Rating from 1 to 5.
-            place (Place): Place instance associated with the review.
-            user (User): User instance who authored the review.
-            **kwargs: Additional base model attributes.
-        """
-
-        self._text = None
-        self._rating = None
-        self._place = None
-        self._user = None
-
+    def __init__(self, text, rating, place_id, user_id, **kwargs):
         super().__init__(**kwargs)
-
         self.text = text
         self.rating = rating
-        self.place = place
-        self.user = user
+        self.place_id = place_id
+        self.user_id = user_id
 
     @property
     def text(self):
@@ -65,21 +53,21 @@ class Review(BaseModel):
         self._rating = value
 
     @property
-    def place(self):
-        return self._place
+    def place_id(self):
+        return self._place_id
 
-    @place.setter
-    def place(self, value):
-        if not isinstance(value, Place):
-            raise ValueError("Invalid place instance.")
-        self._place = value
+    @place_id.setter
+    def place_id(self, value):
+        if not isinstance(value, str):
+            raise ValueError("Invalid place_id.")
+        self._place_id = value
 
     @property
-    def user(self):
-        return self._user
+    def user_id(self):
+        return self._user_id
 
-    @user.setter
-    def user(self, value):
-        if not isinstance(value, User):
-            raise ValueError("Invalid user instance.")
-        self._user = value
+    @user_id.setter
+    def user_id(self, value):
+        if not isinstance(value, str):
+            raise ValueError("Invalid user_id.")
+        self._user_id = value
