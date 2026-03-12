@@ -20,6 +20,7 @@ class Place(BaseModel):
 
     owner     = db.relationship('User',    foreign_keys=[_owner_id], backref='places', lazy=True)
     amenities = db.relationship('Amenity', secondary=place_amenity,  lazy=True)
+    reviews = db.relationship('Review', backref='place', lazy=True)
 
     def __init__(self, title, price, longitude, latitude, owner_id, description="", **kwargs):
         super().__init__(**kwargs)
