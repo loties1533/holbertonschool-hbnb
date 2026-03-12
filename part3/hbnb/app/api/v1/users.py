@@ -26,8 +26,13 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new user"""
+        claims = get_jwt()
+        if not claims.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+        
         user_data = api.payload
 
         safe_data = {
@@ -91,6 +96,10 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
 
         data = api.payload
+
+        if ('email' in data or 'password' in data) and not claims.get('is_admin', False):
+            return {'error': 'You cannot modify email or password'}, 400
+
 
         allowed_fields = ['first_name', 'last_name', 'email', 'password']
         update_data = {k: v for k, v in data.items() if k in allowed_fields}

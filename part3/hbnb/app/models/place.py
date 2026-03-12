@@ -1,30 +1,33 @@
 #!/usr/bin/python3
-"""
-Place - HBnB place model mapped to the database
-"""
 from app import db
 from .basemodel import BaseModel
 
+place_amenity = db.Table(
+    'place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
+
 class Place(BaseModel):
-    """
-    Represents a place in the HBnB system, stored in the database.
-    """
     __tablename__ = 'places'
 
-    _title = db.Column('title', db.String(100), nullable=False)
+    _title       = db.Column('title',       db.String(100), nullable=False)
     _description = db.Column('description', db.String(255))
-    _price = db.Column('price', db.Float, nullable=False)
-    _latitude = db.Column('latitude', db.Float, nullable=False)
-    _longitude = db.Column('longitude', db.Float, nullable=False)
-    _owner_id = db.Column('owner_id', db.String(36), nullable=False)
+    _price       = db.Column('price',       db.Float,       nullable=False)
+    _latitude    = db.Column('latitude',    db.Float,       nullable=False)
+    _longitude   = db.Column('longitude',   db.Float,       nullable=False)
+    _owner_id    = db.Column('owner_id',    db.String(36),  db.ForeignKey('users.id'), nullable=False)
+
+    owner     = db.relationship('User',    foreign_keys=[_owner_id], backref='places', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity,  lazy=True)
 
     def __init__(self, title, price, longitude, latitude, owner_id, description="", **kwargs):
         super().__init__(**kwargs)
-        self.title = title
-        self.price = price
-        self.longitude = longitude
-        self.latitude = latitude
-        self.owner_id = owner_id # On passe l'ID ici
+        self.title       = title
+        self.price       = price
+        self.longitude   = longitude
+        self.latitude    = latitude
+        self.owner_id    = owner_id
         self.description = description
 
     @property
@@ -86,7 +89,7 @@ class Place(BaseModel):
     @property
     def description(self):
         return self._description
-    
+
     @description.setter
     def description(self, value):
         self._description = value

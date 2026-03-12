@@ -5,7 +5,6 @@ from app.services import facade
 
 api = Namespace('places', description='Places operations')
 
-# Define the models for related entities
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
     'name': fields.String(description='Name of the amenity')
@@ -25,7 +24,6 @@ review_model = api.model('PlaceReview', {
     'user_id': fields.String(description='ID of the user')
 })
 
-# Define the place model for input validation and documentation
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
@@ -43,10 +41,15 @@ class PlaceList(Resource):
     @jwt_required()
     def post(self):
         """Register a new place"""
-        current_user = get_jwt_identity()
-        place_data = api.payload
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        place_data = api.payload.copy()
 
-        place_data['owner_id'] = current_user
+        requested_owner_id = place_data.get('owner_id')
+        if not claims.get('is_admin') and requested_owner_id != current_user_id:
+            return {'error': 'Invalid input data'}, 400
+
+        place_data['owner_id'] = current_user_id
 
         try:
             new_place = facade.create_place(place_data)
@@ -57,7 +60,7 @@ class PlaceList(Resource):
                 'price': new_place.price,
                 'latitude': new_place.latitude,
                 'longitude': new_place.longitude,
-                'owner_id': new_place.owner.id,
+                'owner_id': new_place.owner_id,
             }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -73,6 +76,7 @@ class PlaceList(Resource):
             'longitude': p.longitude
         } for p in places], 200
 
+
 @api.route('/<place_id>')
 class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
@@ -83,6 +87,8 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
+        owner = facade.get_user(place.owner_id)
+
         return {
             'id': place.id,
             'title': place.title,
@@ -91,12 +97,12 @@ class PlaceResource(Resource):
             'longitude': place.longitude,
             'price': place.price,
             'owner': {
-                'id': place.owner.id,
-                'first_name': place.owner.first_name,
-                'last_name': place.owner.last_name,
-                'email': place.owner.email,
-            },
-            'amenities': [{'id': a.id, 'name': a.name} for a in place.amenities],
+                'id': owner.id,
+                'first_name': owner.first_name,
+                'last_name': owner.last_name,
+                'email': owner.email,
+            } if owner else None,
+            'amenities': [],
         }, 200
 
     @api.expect(place_model)
@@ -112,8 +118,8 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
-        
-        if place.owner.id != current_user_id and not claims.get('is_admin'):
+
+        if place.owner_id != current_user_id and not claims.get('is_admin'):
             return {'error': 'Unauthorized action'}, 403
 
         try:
@@ -123,6 +129,7 @@ class PlaceResource(Resource):
             return {'message': 'Place updated successfully'}, 200
         except ValueError as e:
             return {'error': str(e)}, 400
+
 
 @api.route('/<place_id>/reviews')
 class PlaceReviewList(Resource):

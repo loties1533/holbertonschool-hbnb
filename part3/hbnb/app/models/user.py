@@ -25,18 +25,16 @@ class User(BaseModel):
         Initializes a new User instance and hashes the password before storing it.
         """
         super().__init__(**kwargs)
-
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
         self.password = password
-        
 
     @property
     def first_name(self):
         return self._first_name
-    
+
     @first_name.setter
     def first_name(self, value):
         if not value or len(value) > 50:
@@ -46,17 +44,17 @@ class User(BaseModel):
     @property
     def last_name(self):
         return self._last_name
-    
+
     @last_name.setter
     def last_name(self, value):
         if not value or len(value) > 50:
             raise ValueError("Last name required (maximum 50 characters).")
         self._last_name = value
-        
+
     @property
     def email(self):
         return self._email
-    
+
     @email.setter
     def email(self, value):
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -67,12 +65,17 @@ class User(BaseModel):
     @property
     def password(self):
         return self._password
-    
+
     @password.setter
     def password(self, password):
         self._password = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self._password = bcrypt.generate_password_hash(password).decode('utf-8')
+
     def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self._password, password)
 
     @property
