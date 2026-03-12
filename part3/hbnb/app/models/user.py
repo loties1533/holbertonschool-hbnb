@@ -19,6 +19,7 @@ class User(BaseModel):
     _email = db.Column('email', db.String(255), unique=True, nullable=False)
     _is_admin = db.Column('is_admin', db.Boolean, default=False, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
+    reviews = db.relationship('Review', backref='author', lazy=True)
 
     def __init__(self, first_name, last_name, email, password, is_admin=False, **kwargs):
         """
