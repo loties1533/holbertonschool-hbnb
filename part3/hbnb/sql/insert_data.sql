@@ -1,5 +1,5 @@
 -- User admin initial
--- MDP : admin1234 (hashé avec bcrypt)
+-- MDP : admin1234, (hashé avec bcrypt)
 INSERT INTO User (id, first_name, last_name, email, password, is_admin)
 VALUES (
     '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
