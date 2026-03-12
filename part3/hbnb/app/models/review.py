@@ -22,8 +22,8 @@ class Review(BaseModel):
 
     _text = db.Column('text', db.String(1024), nullable=False)
     _rating = db.Column('rating', db.Integer, nullable=False)
-    _place_id = db.Column('place_id', db.String(36), nullable=False)
-    _user_id = db.Column('user_id', db.String(36), nullable=False)
+    _place_id = db.Column('place_id', db.String(36), db.ForeignKey('places.id'), nullable=False)
+    _user_id = db.Column('user_id', db.String(36), db.ForeignKey('users.id'), nullable=False)
 
     def __init__(self, text, rating, place_id, user_id, **kwargs):
         super().__init__(**kwargs)
@@ -71,3 +71,4 @@ class Review(BaseModel):
         if not isinstance(value, str):
             raise ValueError("Invalid user_id.")
         self._user_id = value
+
