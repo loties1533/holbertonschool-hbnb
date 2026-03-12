@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS Place (
 -- Review Table
 
 CREATE TABLE IF NOT EXISTS Review (
-    id   CHAR(36) PRIMARY KEY,
-    text        TEXT  NOT NULL,
-    rating      INT   NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    user_id     CHAR(36) NOT NULL,
-    place_id    CHAR(36) NOT NULL,
+    id CHAR(36) PRIMARY KEY,
+    text  TEXT NOT NULL,
+    rating  INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    user_id  CHAR(36) NOT NULL,
+    place_id  CHAR(36) NOT NULL,
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id)  REFERENCES User(id)  ON DELETE CASCADE,
@@ -46,12 +46,12 @@ CREATE TABLE IF NOT EXISTS Review (
 CREATE TABLE IF NOT EXISTS Amenity (
     id CHAR(36) PRIMARY KEY,
     name  VARCHAR(255) NOT NULL UNIQUE,
-    created_at  DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
  
 -- Place_Amenity Table (Many-to-Many)
--- table d'association entre Place et Amenity, avec des clés étrangères vers les deux tables et une clé primaire
+-- table d'association entre Place et Amenity ,avec des clés étrangères vers les deux tables et une clé primaire
 
 CREATE TABLE IF NOT EXISTS Place_Amenity (
     place_id    CHAR(36) NOT NULL,
