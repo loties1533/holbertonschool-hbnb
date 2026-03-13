@@ -4,6 +4,8 @@ from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from app import db
+
 
 class HBnBFacade:
     def __init__(self):
@@ -34,7 +36,15 @@ class HBnBFacade:
         if 'password' in data:
             user.hash_password(data.pop('password'))
         user.update(data)
+        db.session.commit()
         return user
+    
+    def delete_user(self, user_id):
+        user = self.get_user(user_id)
+        if not user:
+            return False
+        self.user_repo.delete(user_id)
+        return True
 
     """Amenity methods"""
     def create_amenity(self, amenity_data):
@@ -53,6 +63,7 @@ class HBnBFacade:
         if not amenity:
             return None
         amenity.update(amenity_data)
+        db.session.commit()
         return amenity
 
     """Place methods"""
@@ -78,6 +89,7 @@ class HBnBFacade:
         if not place:
             return None
         place.update(place_data)
+        db.session.commit()
         return place
 
     """Review methods"""
@@ -114,6 +126,7 @@ class HBnBFacade:
         if not review:
             return None
         review.update(review_data)
+        db.session.commit()
         return review
 
     def delete_review(self, review_id):
