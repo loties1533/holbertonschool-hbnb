@@ -12,6 +12,11 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+review_update_model = api.model('ReviewUpdate', {
+    'text': fields.String(required=True, description='Text of the review'),
+    'rating': fields.Integer(required=True, description='Rating of the place (1-5)')
+})
+
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model, validate=True)
@@ -77,7 +82,7 @@ class ReviewResource(Resource):
             'place_id': review.place_id,
         }, 200
 
-    @api.expect(review_model, validate=True)
+    @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
