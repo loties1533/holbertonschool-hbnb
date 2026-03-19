@@ -63,7 +63,7 @@ python3 run.py
 
 4. Accéder à la documentation Swagger : `http://127.0.0.1:5000/api/v1/`
 
-## 4. Base de Données — Diagramme ER
+## 4. Base de Données — Diagrammes ER
 
 ### Diagramme Principal
 
@@ -118,7 +118,7 @@ erDiagram
     AMENITY ||--o{ PLACE_AMENITY : "appartient à"
 ```
 
-### Relations
+### Résumé des Relations
 
 | Entité A | Entité B | Type | Description |
 |----------|----------|------|-------------|
@@ -128,7 +128,11 @@ erDiagram
 | PLACE | AMENITY | N:N | Relation gérée via PLACE_AMENITY |
 | USER + PLACE | REVIEW | UNIQUE | Un seul avis par utilisateur par logement |
 
+---
+
 ### Diagramme Étendu — Avec Réservation
+
+![ER Diagram Extended](docs/er_diagram_extended.png)
 ```mermaid
 erDiagram
     USER {
@@ -152,6 +156,25 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
+    REVIEW {
+        char(36) id PK
+        varchar(1024) text
+        int rating
+        char(36) user_id FK
+        char(36) place_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    AMENITY {
+        char(36) id PK
+        varchar(50) name
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE_AMENITY {
+        char(36) place_id FK
+        char(36) amenity_id FK
+    }
     RESERVATION {
         char(36) id PK
         char(36) user_id FK
@@ -165,9 +188,27 @@ erDiagram
     }
 
     USER ||--o{ PLACE : "possède"
+    USER ||--o{ REVIEW : "rédige"
+    PLACE ||--o{ REVIEW : "reçoit"
+    PLACE ||--o{ PLACE_AMENITY : "possède"
+    AMENITY ||--o{ PLACE_AMENITY : "appartient à"
     USER ||--o{ RESERVATION : "effectue"
     PLACE ||--o{ RESERVATION : "fait l'objet de"
 ```
+
+### Résumé des Relations Étendues
+
+| Entité A | Entité B | Type | Description |
+|----------|----------|------|-------------|
+| USER | PLACE | 1:N | Un utilisateur peut posséder plusieurs logements |
+| USER | REVIEW | 1:N | Un utilisateur peut rédiger plusieurs avis |
+| PLACE | REVIEW | 1:N | Un logement peut recevoir plusieurs avis |
+| PLACE | AMENITY | N:N | Relation gérée via PLACE_AMENITY |
+| USER + PLACE | REVIEW | UNIQUE | Un seul avis par utilisateur par logement |
+| USER | RESERVATION | 1:N | Un utilisateur peut effectuer plusieurs réservations |
+| PLACE | RESERVATION | 1:N | Un logement peut faire l'objet de plusieurs réservations |
+
+---
 
 ## 5. Authentification JWT
 
