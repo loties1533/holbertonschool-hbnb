@@ -1,31 +1,23 @@
 #!/usr/bin/python3
 """
-Amenity - HBnB amenity model
-Fields: name (max 50 chars)
+Amenity - HBnB amenity model (Wi-Fi, Parking, etc.)
 """
+from app import db
 from .basemodel import BaseModel
 
 class Amenity(BaseModel):
     """
-    Represents an amenity in the HBnB system.
-
-    Attributes:
-        name (str): The name of the amenity (max 50 chars).
+    Represents an amenity in the HBnB system, mapped to the database.
     """
+    __tablename__ = 'amenities'
+
+    _name = db.Column('name', db.String(50), nullable=False)
 
     def __init__(self, name, **kwargs):
         """
         Initializes a new Amenity instance.
-
-        Args:
-            name (str): Name of the amenity.
-            **kwargs: Additional base model attributes (id, dates).
         """
-
-        self._name = None
-
         super().__init__(**kwargs)
-
         self.name = name
 
     @property

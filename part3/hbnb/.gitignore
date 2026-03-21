@@ -1,5 +1,5 @@
+instance/development.db
+instance/production.db
 __pycache__/
-.pytest_cache/
-venv/
+*.pyc
 .venv/
-.DS_Store

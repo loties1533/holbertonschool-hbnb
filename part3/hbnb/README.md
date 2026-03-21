@@ -1,192 +1,263 @@
-# HBnB Evolution - Partie 2 : Logique Métier et Implémentation de l'API
+# HBnB Evolution - Part 3: Database & Authentication
 
-## Présentation du Projet
+## 1. Présentation du Projet
 
-Cette phase du projet HBnB consiste à implémenter les fonctionnalités de base de l'application en utilisant Python et Flask. L'objectif est de structurer l'application en couches distinctes pour séparer la logique de présentation de la logique métier, garantissant ainsi une base saine et évolutive.
+Ce projet est la troisième étape de l'application HBnB. Il implémente :
+- L'authentification JWT
+- La persistance des données avec SQLAlchemy
+- Le contrôle d'accès basé sur les rôles (RBAC)
+- Les diagrammes ER de la base de données
 
-Le projet permet de gérer les **Utilisateurs (Users)**, les **Lieux (Places)**, les **Avis (Reviews)** et les **Équipements (Amenities)**.
+## 2. Architecture
 
----
+L'application est structurée comme suit :
 
-## Architecture et Logique du Code
-
-Le projet repose sur une **Architecture en Couches** et l'utilisation du **Pattern Façade**. Cette approche permet de modifier une partie du code (comme la base de données plus tard) sans impacter les autres couches.
-
-### Structure en Couches
-
-- **Couche de Présentation (API)** : Située dans `app/api/v1/`. Elle définit les routes (endpoints) et gère les entrées/sorties JSON via `flask-restx`.
-- **Couche de Logique Métier** : Située dans `app/models/`. Elle contient les règles de gestion et les entités.
-- **Couche de Persistance** : Gère le stockage des données (actuellement en mémoire via `InMemoryRepository`).
-
-### Le Modèle "Façade"
-
-La Facade sert d'interface unique entre l'API et la logique métier. L'API ne communique jamais directement avec les modèles ou le stockage. Elle demande à la Façade, qui se charge de coordonner les actions entre les différentes entités.
-
----
-
-## Structure du Projet
-
+- **Modèles (Models)** : Définissent les entités (User, Place, Review, Amenity) mappées avec SQLAlchemy.
+- **Services (Facade)** : Orchestrent les opérations entre l'API et la persistance.
+- **API (v1)** : Endpoints Flask-RESTx protégés par JWT.
+- **Persistance** : SQLAlchemyRepository avec base de données SQLite.
 ```
-hbnb/
+project/
 ├── app/
-│   ├── __init__.py
-│   ├── api/
-│   │   ├── __init__.py
-│   │   └── v1/
-│   │       ├── __init__.py
-│   │       ├── users.py
-│   │       ├── amenities.py
-│   │       ├── places.py
-│   │       └── reviews.py
+│   ├── api/v1/
+│   │   ├── auth.py
+│   │   ├── users.py
+│   │   ├── places.py
+│   │   ├── reviews.py
+│   │   └── amenities.py
 │   ├── models/
-│   │   ├── __init__.py
 │   │   ├── basemodel.py
 │   │   ├── user.py
 │   │   ├── place.py
 │   │   ├── review.py
 │   │   └── amenity.py
-│   ├── services/
-│   │   ├── __init__.py
-│   │   └── facade.py
-│   └── persistence/
-│       ├── __init__.py
-│       └── repository.py
-├── tests/
-│   ├── __init__.py
-│   └── test_endpoints.py
-├── run.py
+│   ├── persistence/
+│   │   ├── repository.py
+│   │   └── user_repository.py
+│   └── services/
+│       └── facade.py
 ├── config.py
-├── requirements.txt
-└── README.md
+├── run.py
+└── requirements.txt
 ```
 
----
+## 3. Installation et Lancement
 
-## Relations et Interactions
-
-Voici comment les entités interagissent entre elles au sein de la logique métier :
-
-```
-  [ User ] <------- (Propriétaire) ------- [ Place ]
-     |                                         |
-     |                                         |
- (Auteur)                                  (Cible)
-     |                                         |
-     v                                         v
-  [ Review ] --------------------------------> [ Place ]
-                                               |
-                                               |
-  [ Amenity ] <--- (Plusieurs à Plusieurs) ----+
-```
-
-- **User / Place** : Relation 1:N — Un utilisateur peut posséder plusieurs lieux
-- **Place / Amenity** : Relation N:N — Un lieu peut avoir plusieurs équipements, et inversement
-- **Review** : Un avis lie obligatoirement un utilisateur (`user`) et un lieu (`place`)
-
----
-
-## Concepts Techniques Clés
-
-- **Sérialisation des données** : Conversion des objets complexes en JSON. Une `Place` affiche les détails du propriétaire et non un simple ID.
-- **Opérations CRUD** : Implémentation complète des méthodes de création, lecture, mise à jour. Le DELETE n'est implémenté que pour les Reviews.
-- **Validation Métier** : Auto-validation des modèles (emails valides, limites de caractères, notes entre 1 et 5, coordonnées GPS, etc.)
-- **Découplage** : Indépendance totale entre l'interface API et le mode de stockage grâce à la Façade.
-
----
-
-## Installation et Lancement
-
-### Prérequis
-
-- Python 3.10.12
-- pip3
-
-### Installation des dépendances
-
+1. Installer les dépendances :
 ```bash
-pip3 install flask flask-restx
+pip install -r requirements.txt
 ```
 
-### Lancer le serveur
-
+2. Initialiser la base de données :
 ```bash
-cd part2/hbnb
+flask shell
+>>> from app import db
+>>> db.create_all()
+>>> exit()
+```
+
+3. Lancer le serveur :
+```bash
 python3 run.py
 ```
 
-Le serveur démarre sur `http://127.0.0.1:5000`
+4. Accéder à la documentation Swagger : `http://127.0.0.1:5000/api/v1/`
+
+## 4. Base de Données — Diagrammes ER
+
+### Diagramme Principal
+
+![ER Diagram](docs/er_diagram.png)
+```mermaid
+erDiagram
+    USER {
+        char(36) id PK
+        varchar(50) first_name
+        varchar(50) last_name
+        varchar(255) email
+        varchar(255) password
+        boolean is_admin
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE {
+        char(36) id PK
+        varchar(100) title
+        varchar(255) description
+        float price
+        float latitude
+        float longitude
+        char(36) owner_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    REVIEW {
+        char(36) id PK
+        varchar(1024) text
+        int rating
+        char(36) user_id FK
+        char(36) place_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    AMENITY {
+        char(36) id PK
+        varchar(50) name
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE_AMENITY {
+        char(36) place_id FK
+        char(36) amenity_id FK
+    }
+
+    USER ||--o{ PLACE : "possède"
+    USER ||--o{ REVIEW : "rédige"
+    PLACE ||--o{ REVIEW : "reçoit"
+    PLACE ||--o{ PLACE_AMENITY : "possède"
+    AMENITY ||--o{ PLACE_AMENITY : "appartient à"
+```
+
+### Résumé des Relations
+
+| Entité A | Entité B | Type | Description |
+|----------|----------|------|-------------|
+| USER | PLACE | 1:N | Un utilisateur peut posséder plusieurs logements |
+| USER | REVIEW | 1:N | Un utilisateur peut rédiger plusieurs avis |
+| PLACE | REVIEW | 1:N | Un logement peut recevoir plusieurs avis |
+| PLACE | AMENITY | N:N | Relation gérée via PLACE_AMENITY |
+| USER + PLACE | REVIEW | UNIQUE | Un seul avis par utilisateur par logement |
 
 ---
 
-## Documentation de l'API
+### Diagramme Étendu — Avec Réservation
 
-L'API est auto-documentée via **Swagger**. Une fois le serveur lancé, accédez à la documentation interactive :
+![ER Diagram Extended](docs/er_diagram_extended.png)
+```mermaid
+erDiagram
+    USER {
+        char(36) id PK
+        varchar(50) first_name
+        varchar(50) last_name
+        varchar(255) email
+        varchar(255) password
+        boolean is_admin
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE {
+        char(36) id PK
+        varchar(100) title
+        varchar(255) description
+        float price
+        float latitude
+        float longitude
+        char(36) owner_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    REVIEW {
+        char(36) id PK
+        varchar(1024) text
+        int rating
+        char(36) user_id FK
+        char(36) place_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    AMENITY {
+        char(36) id PK
+        varchar(50) name
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE_AMENITY {
+        char(36) place_id FK
+        char(36) amenity_id FK
+    }
+    RESERVATION {
+        char(36) id PK
+        char(36) user_id FK
+        char(36) place_id FK
+        datetime start_date
+        datetime end_date
+        float total_price
+        varchar(50) status
+        datetime created_at
+        datetime updated_at
+    }
 
+    USER ||--o{ PLACE : "possède"
+    USER ||--o{ REVIEW : "rédige"
+    PLACE ||--o{ REVIEW : "reçoit"
+    PLACE ||--o{ PLACE_AMENITY : "possède"
+    AMENITY ||--o{ PLACE_AMENITY : "appartient à"
+    USER ||--o{ RESERVATION : "effectue"
+    PLACE ||--o{ RESERVATION : "fait l'objet de"
 ```
-http://127.0.0.1:5000/api/v1/
-```
 
-### Endpoints disponibles
+### Résumé des Relations Étendues
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/v1/users/` | Créer un utilisateur |
-| GET | `/api/v1/users/` | Lister tous les utilisateurs |
-| GET | `/api/v1/users/<id>` | Récupérer un utilisateur |
-| PUT | `/api/v1/users/<id>` | Modifier un utilisateur |
-| POST | `/api/v1/amenities/` | Créer un équipement |
-| GET | `/api/v1/amenities/` | Lister tous les équipements |
-| GET | `/api/v1/amenities/<id>` | Récupérer un équipement |
-| PUT | `/api/v1/amenities/<id>` | Modifier un équipement |
-| POST | `/api/v1/places/` | Créer un lieu |
-| GET | `/api/v1/places/` | Lister tous les lieux |
-| GET | `/api/v1/places/<id>` | Récupérer un lieu avec owner et amenities |
-| PUT | `/api/v1/places/<id>` | Modifier un lieu |
-| GET | `/api/v1/places/<id>/reviews` | Lister les avis d'un lieu |
-| POST | `/api/v1/reviews/` | Créer un avis |
-| GET | `/api/v1/reviews/` | Lister tous les avis |
-| GET | `/api/v1/reviews/<id>` | Récupérer un avis |
-| PUT | `/api/v1/reviews/<id>` | Modifier un avis |
-| DELETE | `/api/v1/reviews/<id>` | Supprimer un avis |
+| Entité A | Entité B | Type | Description |
+|----------|----------|------|-------------|
+| USER | PLACE | 1:N | Un utilisateur peut posséder plusieurs logements |
+| USER | REVIEW | 1:N | Un utilisateur peut rédiger plusieurs avis |
+| PLACE | REVIEW | 1:N | Un logement peut recevoir plusieurs avis |
+| PLACE | AMENITY | N:N | Relation gérée via PLACE_AMENITY |
+| USER + PLACE | REVIEW | UNIQUE | Un seul avis par utilisateur par logement |
+| USER | RESERVATION | 1:N | Un utilisateur peut effectuer plusieurs réservations |
+| PLACE | RESERVATION | 1:N | Un logement peut faire l'objet de plusieurs réservations |
 
 ---
 
-## Validation et Tests
+## 5. Authentification JWT
 
-Les tests unitaires couvrent **toute la chaîne** : API → Facade → Modèle.
-
-### Lancer les tests
-
+### Login
 ```bash
-cd part2/hbnb
-python3 -m unittest tests/test_endpoints.py -v
+curl -X POST "http://127.0.0.1:5000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@hbnb.io", "password": "admin1234"}'
 ```
 
-### Ce qui est testé (77 tests)
+Réponse :
+```json
+{"access_token": "eyJ..."}
+```
 
-| Entité | Tests |
-|--------|-------|
-| **Users** | Création valide, email dupliqué, formats d'email invalides (sans @, sans domaine, sans extension, avec espaces, double @), noms vides/trop longs, GET liste, GET par ID, PUT update |
-| **Amenities** | Création valide, nom vide/trop long, limite exacte 50 chars, GET liste, GET par ID, PUT update |
-| **Places** | Création valide, owner invalide, prix négatif/zéro, latitude/longitude hors range et aux limites exactes (±90, ±180), titre vide/trop long, GET liste, GET par ID avec owner et amenities, PUT update |
-| **Reviews** | Création valide, rating aux limites (1 et 5), rating invalide (0, 6, -1), texte vide, user/place inexistants, GET par place (vide et non vide), PUT update, DELETE et vérification après suppression |
+### Utiliser le token
+```bash
+curl -X GET "http://127.0.0.1:5000/api/v1/users/" \
+  -H "Authorization: Bearer <token>"
+```
 
-### Codes de statut testés
+## 6. Tests
 
-- **201** → Création réussie
-- **200** → Récupération / mise à jour / suppression réussie
-- **400** → Données invalides
-- **404** → Ressource inexistante
+### Tests automatisés
+```bash
+python3 -m unittest test_endpoints.py -v
+```
 
----
+### Tests manuels — Exemples
 
-## Lien du Projet
+**Création d'un utilisateur (admin requis) :**
+```bash
+curl -X POST "http://127.0.0.1:5000/api/v1/users/" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <admin_token>" \
+  -d '{"first_name": "Bob", "last_name": "Sponge", "email": "bob@example.com", "password": "password123"}'
+```
 
-[holbertonschool-hbnb](https://github.com/add1ktion/holbertonschool-hbnb.git)
+**Email invalide → 400 :**
+```json
+{"error": "Invalid email format."}
+```
 
----
+**Prix négatif → 400 :**
+```json
+{"error": "Price must be positive."}
+```
 
-## Auteurs
-
-- **Bats Antoine** (add1ktion) — [GitHub](https://github.com/add1ktion)
-- **Laubert Alexis** (loties1533) — [GitHub](https://github.com/loties1533)
+**Action non autorisée → 403 :**
+```json
+{"error": "Unauthorized action"}
+```

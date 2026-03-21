@@ -31,8 +31,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
+    'owner_id': fields.String(required=True, description='ID of the owner')
 })
 
 @api.route('/')
@@ -43,7 +42,7 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         try:
-            new_place = facade.create_place(dict(api.payload))
+            new_place = facade.create_place(api.payload)
             return {
                 'id': new_place.id,
                 'title': new_place.title,
@@ -100,7 +99,7 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         try:
-            updated_place = facade.update_place(place_id, dict(api.payload))
+            updated_place = facade.update_place(place_id, api.payload)
             if not updated_place:
                 return {'error': 'Place not found'}, 404
             return {'message': 'Place updated successfully'}, 200
