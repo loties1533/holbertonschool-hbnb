@@ -138,6 +138,26 @@ erDiagram
 
 ```mermaid
 erDiagram
+    USER {
+        char(36) id PK
+    }
+    PLACE {
+        char(36) id PK
+    }
+    REVIEW {
+        char(36) id PK
+    }
+    AMENITY {
+        char(36) id PK
+    }
+    PLACE_AMENITY {
+        char(36) place_id FK
+        char(36) amenity_id FK
+    }
+    RESERVATION {
+        char(36) id PK
+    }
+
     USER ||--o{ PLACE : "possède"
     USER ||--o{ REVIEW : "rédige"
     PLACE ||--o{ REVIEW : "reçoit"
@@ -145,18 +165,6 @@ erDiagram
     AMENITY ||--o{ PLACE_AMENITY : "appartient à"
     USER ||--o{ RESERVATION : "effectue"
     PLACE ||--o{ RESERVATION : "fait l'objet de"
-
-    RESERVATION {
-        char(36) id PK
-        char(36) user_id FK
-        char(36) place_id FK
-        datetime start_date
-        datetime end_date
-        float total_price
-        varchar(50) status
-        datetime created_at
-        datetime updated_at
-    }
 ```
 
 ### Relations ajoutées
@@ -192,7 +200,7 @@ curl -X GET "http://127.0.0.1:5000/api/v1/users/" \
 
 ### Tests automatisés
 ```bash
-python3 -m unittest test_endpoints.py -v
+python3 -m pytest tests/ -v
 ```
 
 ### Tests manuels — Exemples
