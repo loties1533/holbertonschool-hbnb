@@ -73,7 +73,8 @@ class PlaceList(Resource):
             'id': p.id,
             'title': p.title,
             'latitude': p.latitude,
-            'longitude': p.longitude
+            'longitude': p.longitude,
+            'price': p.price
         } for p in places], 200
 
 
@@ -102,7 +103,7 @@ class PlaceResource(Resource):
                 'last_name': owner.last_name,
                 'email': owner.email,
             } if owner else None,
-            'amenities': [],
+            'amenities': [{'id': a.id, 'name': a.name} for a in place.amenities],
         }, 200
 
     @api.expect(place_model)
@@ -137,11 +138,23 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place(place_id)
-        if reviews is None:
+        place = facade.get_place(place_id)
+        if not place:
             return {'error': 'Place not found'}, 404
-        return [{
-            'id': r.id,
-            'text': r.text,
-            'rating': r.rating,
-        } for r in reviews], 200
+
+        reviews = facade.get_reviews_by_place(place_id)
+        
+        # C'est ici qu'on ajoute les noms !
+        results = []
+        for r in reviews:
+            user = facade.get_user(r.user_id)
+            results.append({
+                'id': r.id,
+                'text': r.text,
+                'rating': r.rating,
+                'user': {
+                    'first_name': user.first_name if user else "Unknown",
+                    'last_name': user.last_name if user else "User"
+                }
+            })
+        return results, 200
