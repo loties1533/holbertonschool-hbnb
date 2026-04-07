@@ -1,21 +1,5 @@
-/* ============================================================
-   HBnB — scripts.js
-   Un seul fichier pour les 4 pages.
-   API base : http://localhost:5000/api/v1
-   Auth : JWT stocké dans le cookie "token"
-   ============================================================ */
-
 const API = 'http://localhost:5000/api/v1';
 
-/* ─────────────────────────────────────────────
-   UTILITAIRES PARTAGÉS
-   ───────────────────────────────────────────── */
-
-/**
- * Lit la valeur d'un cookie par son nom.
- * @param {string} name
- * @returns {string|null}
- */
 function getCookie(name) {
     const match = document.cookie
         .split('; ')
@@ -23,19 +7,10 @@ function getCookie(name) {
     return match ? match.split('=')[1] : null;
 }
 
-/**
- * Extrait un paramètre de l'URL (?key=value).
- * @param {string} key
- * @returns {string|null}
- */
 function getQueryParam(key) {
     return new URLSearchParams(window.location.search).get(key);
 }
 
-/**
- * Affiche un spinner de chargement dans un conteneur.
- * @param {HTMLElement} container
- */
 function showLoader(container) {
     container.innerHTML = `
         <div class="state-container">
@@ -44,11 +19,6 @@ function showLoader(container) {
         </div>`;
 }
 
-/**
- * Affiche un message d'erreur dans un conteneur.
- * @param {HTMLElement} container
- * @param {string} message
- */
 function showError(container, message) {
     container.innerHTML = `
         <div class="state-container">
@@ -56,19 +26,10 @@ function showError(container, message) {
         </div>`;
 }
 
-/**
- * Génère les étoiles pour une note (1-5).
- * @param {number} rating
- * @returns {string}
- */
 function renderStars(rating) {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
 }
 
-
-/* ─────────────────────────────────────────────
-   DÉTECTION DE LA PAGE COURANTE
-   ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.body.dataset.page || detectPage();
 
@@ -78,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (page === 'add_review') initAddReview();
 });
 
-/** Détecte la page via le nom du fichier dans l'URL. */
 function detectPage() {
     const path = window.location.pathname;
     if (path.includes('login'))      return 'login';
@@ -86,11 +46,6 @@ function detectPage() {
     if (path.includes('add_review')) return 'add_review';
     return 'index';
 }
-
-
-/* ═════════════════════════════════════════════
-   TASK 1 — LOGIN (login.html)
-   ═════════════════════════════════════════════ */
 
 function initLogin() {
     const form      = document.getElementById('login-form');
@@ -114,11 +69,6 @@ function initLogin() {
     });
 }
 
-/**
- * Envoie les identifiants à l'API et stocke le JWT dans un cookie.
- * @param {string} email
- * @param {string} password
- */
 async function loginUser(email, password) {
     const response = await fetch(`${API}/auth/login`, {
         method: 'POST',
@@ -132,17 +82,10 @@ async function loginUser(email, password) {
     }
 
     const data = await response.json();
-    // Stockage du JWT dans un cookie (session)
     document.cookie = `token=${data.access_token}; path=/`;
     window.location.href = 'index.html';
 }
 
-
-/* ═════════════════════════════════════════════
-   TASK 2 — INDEX / LISTE DES PLACES (index.html)
-   ═════════════════════════════════════════════ */
-
-// Cache des places pour le filtre côté client
 let allPlaces = [];
 
 function initIndex() {
@@ -150,30 +93,19 @@ function initIndex() {
     initPriceFilter();
 }
 
-/**
- * Vérifie l'authentification et gère la visibilité du bouton Login.
- * Récupère les places dans tous les cas (API publique).
- */
 function checkAuthIndex() {
     const token     = getCookie('token');
     const loginLink = document.getElementById('login-link');
 
     if (token) {
-        // Utilisateur connecté : on cache le bouton login
         if (loginLink) loginLink.style.display = 'none';
     } else {
-        // Non connecté : on affiche le bouton login
         if (loginLink) loginLink.style.display = 'inline-block';
     }
 
-    // Les places sont publiques : on les charge dans tous les cas
     fetchPlaces(token);
 }
 
-/**
- * Récupère toutes les places depuis l'API.
- * @param {string|null} token
- */
 async function fetchPlaces(token) {
     const list = document.getElementById('places-list');
     showLoader(list);
@@ -191,10 +123,6 @@ async function fetchPlaces(token) {
     }
 }
 
-/**
- * Affiche la liste des places dans le DOM.
- * @param {Array} places
- */
 function displayPlaces(places) {
     const list = document.getElementById('places-list');
     list.innerHTML = '';
@@ -222,7 +150,6 @@ function displayPlaces(places) {
     });
 }
 
-/** Initialise le filtre par prix. */
 function initPriceFilter() {
     const select = document.getElementById('price-filter');
     if (!select) return;
@@ -242,11 +169,6 @@ function initPriceFilter() {
     });
 }
 
-
-/* ═════════════════════════════════════════════
-   TASK 3 — PLACE DETAILS (place.html)
-   ═════════════════════════════════════════════ */
-
 function initPlace() {
     const placeId = getQueryParam('id');
     if (!placeId) {
@@ -257,28 +179,19 @@ function initPlace() {
     const token     = getCookie('token');
     const loginLink = document.getElementById('login-link');
 
-    // Gestion du bouton login dans le header
     if (token && loginLink) loginLink.style.display = 'none';
 
-    // Section "Add Review" : visible seulement si connecté
     const addReviewSection = document.getElementById('add-review');
     if (addReviewSection) {
         addReviewSection.style.display = token ? 'block' : 'none';
     }
 
-    // Chargement des données
     fetchPlaceDetails(token, placeId);
     fetchPlaceReviews(token, placeId);
 
-    // Formulaire de review inline (place.html)
     initInlineReviewForm(token, placeId);
 }
 
-/**
- * Récupère et affiche le détail d'une place.
- * @param {string|null} token
- * @param {string} placeId
- */
 async function fetchPlaceDetails(token, placeId) {
     const section = document.getElementById('place-details');
     showLoader(section);
@@ -296,14 +209,9 @@ async function fetchPlaceDetails(token, placeId) {
     }
 }
 
-/**
- * Construit l'affichage du détail d'une place.
- * @param {Object} place
- */
 function displayPlaceDetails(place) {
     const section = document.getElementById('place-details');
 
-    // Mise à jour du titre de l'onglet
     document.title = `HBnB — ${place.title}`;
 
     const amenitiesHtml = place.amenities && place.amenities.length
@@ -338,14 +246,8 @@ function displayPlaceDetails(place) {
     `;
 }
 
-/**
- * Récupère et affiche les reviews d'une place.
- * @param {string|null} token
- * @param {string} placeId
- */
 async function fetchPlaceReviews(token, placeId) {
     const section = document.getElementById('reviews');
-    // Garder le h2 et ajouter un loader
     const loader = document.createElement('div');
     loader.className = 'state-container';
     loader.innerHTML = '<div class="loader"></div>';
@@ -368,13 +270,8 @@ async function fetchPlaceReviews(token, placeId) {
     }
 }
 
-/**
- * Affiche les reviews dans le DOM.
- * @param {Array} reviews
- */
 function displayReviews(reviews) {
     const section = document.getElementById('reviews');
-    // On supprime le loader (tout sauf le h2)
     [...section.children].forEach(child => {
         if (child.tagName !== 'H2') child.remove();
     });
@@ -405,11 +302,6 @@ function displayReviews(reviews) {
     });
 }
 
-/**
- * Gestion du formulaire de review inline sur place.html.
- * @param {string|null} token
- * @param {string} placeId
- */
 function initInlineReviewForm(token, placeId) {
     const form = document.getElementById('review-form');
     if (!form || !token) return;
@@ -433,7 +325,6 @@ function initInlineReviewForm(token, placeId) {
         try {
             await submitReviewFromPlace(token, placeId, text, rating);
             form.reset();
-            // Rechargement des reviews
             fetchPlaceReviews(token, placeId);
         } catch (err) {
             if (errorBox) {
@@ -444,9 +335,6 @@ function initInlineReviewForm(token, placeId) {
     });
 }
 
-/**
- * Soumet une review depuis place.html.
- */
 async function submitReviewFromPlace(token, placeId, text, rating) {
     const res = await fetch(`${API}/reviews/`, {
         method: 'POST',
@@ -458,7 +346,6 @@ async function submitReviewFromPlace(token, placeId, text, rating) {
             text,
             rating,
             place_id: placeId,
-            // user_id est extrait du JWT côté serveur
             user_id: getUserIdFromToken(token)
         })
     });
@@ -470,13 +357,7 @@ async function submitReviewFromPlace(token, placeId, text, rating) {
     return res.json();
 }
 
-
-/* ═════════════════════════════════════════════
-   TASK 4 — ADD REVIEW (add_review.html)
-   ═════════════════════════════════════════════ */
-
 function initAddReview() {
-    // Redirection si non authentifié
     const token = getCookie('token');
     if (!token) {
         window.location.href = 'index.html';
@@ -489,14 +370,11 @@ function initAddReview() {
         return;
     }
 
-    // Mise à jour du lien "retour à la place"
     const backLink = document.getElementById('back-to-place');
     if (backLink) backLink.href = `place.html?id=${placeId}`;
 
-    // Afficher le nom de la place si possible
     loadPlaceName(token, placeId);
 
-    // Formulaire
     const form = document.getElementById('review-form');
     if (!form) return;
 
@@ -529,11 +407,6 @@ function initAddReview() {
     });
 }
 
-/**
- * Charge et affiche le titre de la place dans le formulaire.
- * @param {string} token
- * @param {string} placeId
- */
 async function loadPlaceName(token, placeId) {
     try {
         const res = await fetch(`${API}/places/${placeId}`, {
@@ -544,16 +417,9 @@ async function loadPlaceName(token, placeId) {
         const label = document.getElementById('place-name-label');
         if (label) label.textContent = `for "${place.title}"`;
         document.title = `HBnB — Review: ${place.title}`;
-    } catch (_) { /* silencieux */ }
+    } catch (_) {}
 }
 
-/**
- * Envoie une review à l'API.
- * @param {string} token
- * @param {string} placeId
- * @param {string} text
- * @param {number} rating
- */
 async function submitReview(token, placeId, text, rating) {
     const res = await fetch(`${API}/reviews/`, {
         method: 'POST',
@@ -576,17 +442,6 @@ async function submitReview(token, placeId, text, rating) {
     return res.json();
 }
 
-
-/* ─────────────────────────────────────────────
-   UTILITAIRE — Décode le user_id depuis le JWT
-   (le JWT n'est pas signé côté client, on décode le payload)
-   ───────────────────────────────────────────── */
-
-/**
- * Extrait le user_id du payload JWT (sans vérification de signature).
- * @param {string} token
- * @returns {string}
- */
 function getUserIdFromToken(token) {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -596,11 +451,6 @@ function getUserIdFromToken(token) {
     }
 }
 
-/**
- * Échappe les caractères HTML pour éviter les injections XSS.
- * @param {string} str
- * @returns {string}
- */
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
