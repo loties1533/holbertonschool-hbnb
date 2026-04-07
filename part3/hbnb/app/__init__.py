@@ -26,11 +26,22 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.api.v1.users import api as users_ns
     from app.api.v1.auth import api as auth_ns
 
+    authorizations = {
+        'Bearer Auth': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'Tapez: Bearer <votre_token>'
+        }
+    }
+
     api = Api(
         app, version='1.0',
         title='HBnB API',
         description='HBnB Application API',      
-        doc='/api/v1/'
+        doc='/api/v1/',
+        authorizations=authorizations,
+        security='Bearer Auth'
     )
 
     api.add_namespace(auth_ns, path='/api/v1/auth')

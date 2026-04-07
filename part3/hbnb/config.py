@@ -7,7 +7,9 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
+    # Chemin absolu pour pointer vers la base de données de la partie 3
+    # Les 4 slashs (////) sont obligatoires pour un chemin absolu sur Mac/Linux
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////Users/alexislaubert/holbertonschool-hbnb/part3/hbnb/instance/development.db'
 
 class ProductionConfig(Config):
     DEBUG = False

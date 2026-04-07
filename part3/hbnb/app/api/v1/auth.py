@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
+from flask import request
+from app.models.user import User  # Import direct pour le debug SQL
 
 api = Namespace('auth', description='Authentication operations')
 
@@ -15,20 +17,40 @@ class Login(Resource):
     @api.expect(login_model, validate=True)
     def post(self):
         """Authenticate user and return a JWT token"""
-        credentials = api.payload  # Get the email and password from the request payload
+        credentials = api.payload
+        email = credentials.get('email', '').strip()
+        password = credentials.get('password', '')
+
+        # --- DEBUG TOTAL DE LA BASE ---
+        print("\n--- 🔍 SCAN DE LA BASE DE DONNÉES ---")
+        try:
+            all_users = User.query.all()
+            print(f"Nombre d'utilisateurs en base : {len(all_users)}")
+            for u in all_users:
+                print(f" - Trouvé : '{u.email}' (ID: {u.id})")
+        except Exception as e:
+            print(f"❌ Erreur lors du scan SQL : {e}")
         
-        # Step 1: Retrieve the user based on the provided email
-        user = facade.get_user_by_email(credentials['email'])
+        user = User.query.filter_by(_email=email).first()
+
+        if not user:
+            user = User.query.filter_by(email=email).first()
         
-        # Step 2: Check if the user exists and the password is correct
-        if not user or not user.verify_password(credentials['password']):
+        print(f"Recherche de '{email}' -> {'✅ TROUVÉ' if user else '❌ NON TROUVÉ'}")
+        
+        if user:
+            is_valid = user.verify_password(password)
+            print(f"Vérification mot de passe : {'✅ VALIDE' if is_valid else '❌ INVALIDE'}")
+        print("--------------------------------------\n")
+        # --- FIN SECTION DEBUG ---
+
+        # Vérification et réponse
+        if not user or not user.verify_password(password):
             return {'error': 'Invalid credentials'}, 401
 
-        # Step 3: Create a JWT token with the user's id and is_admin flag
         access_token = create_access_token(
-        identity=str(user.id),   # only user ID goes here
-        additional_claims={"is_admin": user.is_admin}  # extra info here
+            identity=str(user.id),
+            additional_claims={"is_admin": user.is_admin}
         )
         
-        # Step 4: Return the JWT token to the client
         return {'access_token': access_token}, 200
