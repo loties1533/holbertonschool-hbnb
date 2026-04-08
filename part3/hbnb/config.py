@@ -9,7 +9,9 @@ class DevelopmentConfig(Config):
     DEBUG = True
     # Chemin absolu pour pointer vers la base de données de la partie 3
     # Les 4 slashs (////) sont obligatoires pour un chemin absolu sur Mac/Linux
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////Users/alexislaubert/holbertonschool-hbnb/part3/hbnb/instance/development.db'
+    
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(BASE_DIR, "instance", "development.db")}'
 
 class ProductionConfig(Config):
     DEBUG = False
