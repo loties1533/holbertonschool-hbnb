@@ -158,3 +158,13 @@ class PlaceReviewList(Resource):
                 }
             })
         return results, 200
+
+@api.route('/<place_id>/amenities/<amenity_id>')
+class PlaceAmenityResource(Resource):
+    @jwt_required()
+    def post(self, place_id, amenity_id):
+        try:
+            facade.add_amenity_to_place(place_id, amenity_id)
+            return {'message': 'Amenity linked'}, 200
+        except Exception as e:
+            return {'error': str(e)}, 400

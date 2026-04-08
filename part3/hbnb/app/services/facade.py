@@ -135,3 +135,18 @@ class HBnBFacade:
             return False
         self.review_repo.delete(review_id)
         return True
+
+    def add_amenity_to_place(self, place_id, amenity_id):
+        """Liaison Many-to-Many entre Place et Amenity"""
+        place = self.get_place(place_id)
+        amenity = self.get_amenity(amenity_id)
+
+        if not place:
+            raise ValueError("Place not found")
+        if not amenity:
+            raise ValueError("Amenity not found")
+
+        # Si l'amenity n'est pas déjà liée, on l'ajoute
+        if amenity not in place.amenities:
+            place.amenities.append(amenity)
+            db.session.commit()  # On valide l'écriture dans la table de liaison SQL
