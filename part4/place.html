@@ -3,59 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBnB — Place Details</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <title>HBnB &mdash; Place Details</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo-text">HBnB</a>
+        <a href="index.html">
+            <img src="images/logo.png" alt="HBnB logo" class="logo">
+        </a>
         <nav>
             <a href="index.html">Home</a>
+            <!-- Masqué par scripts.js si l'utilisateur est connecté -->
             <a href="login.html" id="login-link" class="login-button">Login</a>
         </nav>
     </header>
 
     <main>
-        <!-- Place details — populated dynamically -->
-        <section id="place-details" class="place-details">
+
+        <div id="place-details">
+        </div>
+
+        <!--
+            Reviews — scripts.js injecte des .review-card   ← CLASSE IMPOSÉE
+            Chaque card : margin:20px | padding:10px | border:1px solid #ddd | border-radius:10px
+        -->
+        <section id="reviews" aria-label="Guest reviews">
+            <h2>Reviews</h2>
         </section>
 
-        <!-- Reviews list — populated dynamically -->
-        <section id="reviews">
-            <h2>Guest reviews</h2>
-        </section>
-
-        <!-- Add review (visible only when authenticated) -->
-        <section id="add-review" style="display:none;">
-            <h2>Leave a review</h2>
-            <form id="review-form">
+        <section id="add-review" class="add-review" style="display:none;" aria-label="Add a review">
+            <h2>Add a Review</h2>
+            <form id="review-form" class="form" novalidate>
                 <div>
-                    <label for="review-text">Your experience</label>
-                    <textarea id="review-text" name="review-text"
-                              placeholder="Share what you loved about this place…"
-                              required></textarea>
+                    <label for="review-text">Your Review:</label>
+                    <textarea id="review-text" name="review-text" required></textarea>
                 </div>
                 <div>
-                    <label for="rating">Rating</label>
+                    <label for="rating">Rating:</label>
                     <select id="rating" name="rating" required>
-                        <option value="">— Choose a rating —</option>
-                        <option value="1">⭐ 1 — Poor</option>
-                        <option value="2">⭐⭐ 2 — Fair</option>
-                        <option value="3">⭐⭐⭐ 3 — Good</option>
-                        <option value="4">⭐⭐⭐⭐ 4 — Very good</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 — Excellent</option>
+                        <option value="1">1 Star</option>
+                        <option value="2">2 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="5">5 Stars</option>
                     </select>
                 </div>
-                <div id="review-error" class="error-msg" style="display:none;"></div>
-                <button type="submit">Submit review</button>
+                <!-- Feedback erreur/succès injecté par scripts.js -->
+                <div id="review-feedback" role="alert" style="display:none;"></div>
+                <button type="submit">Submit Review</button>
             </form>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 HBnB — All rights reserved.</p>
+        <p>&copy; 2024 HBnB Evolution. All rights reserved.</p>
     </footer>
 
     <script src="scripts.js"></script>

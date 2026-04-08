@@ -1,33 +1,24 @@
-/* ============================================
-   HBnB — styles.css
-   Palette : crème #FFF8F0 / corail #FF5A5F / anthracite #2D2D2D
-   Font : Playfair Display (titres) + DM Sans (corps)
-   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ── Variables ─────────────────────────────── */
 :root {
-    --bg:          #FFF8F0;
+    --bg:          #F2F2F2;
     --surface:     #FFFFFF;
-    --primary:     #FF5A5F;
-    --primary-dk:  #E04348;
-    --text:        #2D2D2D;
-    --text-muted:  #888;
-    --border:      #E8E0D8;
-    --radius-card: 10px;
-    --shadow:      0 2px 16px rgba(0,0,0,.08);
-    --shadow-hover:0 8px 32px rgba(255,90,95,.18);
-    --transition:  .22s cubic-bezier(.4,0,.2,1);
+    --primary:     #F0A500;
+    --primary-dk:  #D4920A;
+    --text:        #333333;
+    --text-muted:  #666666;
+    --border:      #dddddd;
+    --radius:      10px;
+    --shadow:      0 2px 12px rgba(0,0,0,.08);
+    --transition:  .2s ease;
 }
 
-/* ── Reset ─────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
 
 body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     background-color: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -37,343 +28,284 @@ body {
 
 /* ── Header ────────────────────────────────── */
 header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    background: var(--primary);
     padding: 0 2rem;
-    height: 70px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 8px rgba(0,0,0,.06);
 }
 
-header .logo {
+.logo {
     height: 40px;
     width: auto;
+    display: block;
 }
 
-header .logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-decoration: none;
-    letter-spacing: -.5px;
-}
-
-nav {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
+nav { display: flex; align-items: center; gap: 1rem; }
 
 nav a {
-    color: var(--text);
+    color: #fff;
     text-decoration: none;
-    font-weight: 500;
-    font-size: .95rem;
-    transition: color var(--transition);
-}
-
-nav a:hover { color: var(--primary); }
-
-/* Bouton login dans le header */
-.login-button {
-    background: var(--primary);
-    color: #fff !important;
-    padding: .5rem 1.2rem;
-    border-radius: 50px;
     font-weight: 600;
-    font-size: .9rem;
-    transition: background var(--transition), transform var(--transition);
+    font-size: .95rem;
+    transition: opacity var(--transition);
 }
+nav a:hover { opacity: .8; }
 
-.login-button:hover {
-    background: var(--primary-dk) !important;
+.login-button {
     color: #fff !important;
-    transform: translateY(-1px);
+    font-weight: 600 !important;
+    font-size: .95rem !important;
+    text-decoration: none !important;
 }
+.login-button:hover { opacity: .8; }
 
 /* ── Footer ────────────────────────────────── */
 footer {
-    background: var(--text);
-    color: #aaa;
+    background: var(--primary);
+    color: #fff;
     text-align: center;
-    padding: 1.4rem;
-    font-size: .85rem;
+    padding: 1.2rem 1rem;
+    font-size: .9rem;
+    font-weight: 500;
     margin-top: auto;
 }
-
-footer a { color: var(--primary); text-decoration: none; }
 
 /* ── Main ──────────────────────────────────── */
 main {
     flex: 1;
-    padding: 2rem;
-    max-width: 1280px;
+    padding: 2rem 1.5rem;
+    max-width: 1100px;
     margin: 0 auto;
     width: 100%;
 }
 
-/* ── Filter bar (index) ─────────────────────── */
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: var(--text);
+}
+
 #filter {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    padding: 1rem 1.4rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
+    justify-content: center;
+    gap: .6rem;
+    margin-bottom: 1.8rem;
 }
 
 #filter label {
     font-weight: 600;
     font-size: .95rem;
-    white-space: nowrap;
 }
 
 #price-filter {
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: .45rem .8rem;
+    border-radius: 6px;
+    padding: .35rem .7rem;
     font-family: inherit;
     font-size: .9rem;
-    background: var(--bg);
+    background: var(--surface);
     color: var(--text);
     cursor: pointer;
-    transition: border-color var(--transition);
 }
-
 #price-filter:focus {
     outline: none;
     border-color: var(--primary);
 }
 
-/* ── Places list grid ───────────────────────── */
+/* ── Places grid ────────────────────────────── */
 #places-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.6rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0;
 }
 
-/* ── Place card (CLASSE IMPOSÉE) ────────────── */
+
 .place-card {
     background: var(--surface);
-    border: 1px solid #ddd;           /* imposé */
-    border-radius: var(--radius-card); /* 10px imposé */
-    margin: 20px;                      /* 20px imposé */
-    padding: 10px;                     /* 10px imposé */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px;
     box-shadow: var(--shadow);
-    transition: box-shadow var(--transition), transform var(--transition);
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: .6rem;
-    animation: fadeUp .4s ease both;
+    text-align: center;
+    transition: box-shadow var(--transition), transform var(--transition);
+    animation: fadeUp .35s ease both;
 }
-
 .place-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-4px);
+    box-shadow: 0 6px 24px rgba(0,0,0,.12);
+    transform: translateY(-3px);
 }
-
 .place-card h3 {
-    font-family: 'Playfair Display', serif;
     font-size: 1.15rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text);
     line-height: 1.3;
 }
-
 .place-card .price {
-    font-size: .95rem;
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.place-card .price span {
+    font-size: .92rem;
     color: var(--text-muted);
-    font-weight: 400;
-    font-size: .85rem;
+    font-weight: 500;
 }
 
-/* Bouton "View Details" (CLASSE IMPOSÉE) */
 .details-button {
     display: inline-block;
-    margin-top: .4rem;
     background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: .55rem 1.1rem;
+    padding: .55rem 1.4rem;
     font-family: inherit;
     font-size: .9rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
+    transition: background var(--transition);
+    margin-top: .2rem;
+}
+.details-button:hover { background: var(--primary-dk); }
+
+#place-details h1 {
     text-align: center;
-    transition: background var(--transition), transform var(--transition);
-    align-self: flex-start;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
 }
 
-.details-button:hover {
-    background: var(--primary-dk);
-    transform: translateY(-1px);
-}
-
-/* ── Place details (place.html) ─────────────── */
-#place-details {
+.place-details {
     background: var(--surface);
-    border-radius: var(--radius-card);
+    border-radius: var(--radius);
     padding: 2rem;
     box-shadow: var(--shadow);
-    margin-bottom: 2rem;
-}
-
-.place-details h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    margin-bottom: .5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .place-info {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin: 1rem 0;
-    color: var(--text-muted);
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
     font-size: .95rem;
-}
-
-.place-info .badge {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: .3rem .9rem;
-    font-size: .85rem;
-    font-weight: 500;
     color: var(--text);
 }
 
-.place-info .price-badge {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
+.place-info p {
+    margin: 0;
 }
 
-.amenities-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .6rem;
-    margin-top: .8rem;
+.place-info strong {
+    font-weight: 700;
 }
 
-.amenity-tag {
-    background: #FFF0F0;
-    color: var(--primary);
-    border: 1px solid #FFD0D2;
-    border-radius: 50px;
-    padding: .3rem .9rem;
-    font-size: .82rem;
-    font-weight: 500;
-}
-
-/* ── Reviews ────────────────────────────────── */
-#reviews {
-    margin-bottom: 2rem;
-}
+/* ── Reviews section ────────────────────────── */
+#reviews { margin-bottom: 1.5rem; }
 
 #reviews h2 {
-    font-family: 'Playfair Display', serif;
     font-size: 1.4rem;
-    margin-bottom: 1rem;
+    font-weight: 700;
+    margin-bottom: .8rem;
+    color: var(--text);
 }
 
-/* Review card (CLASSE IMPOSÉE) */
+
 .review-card {
     background: var(--surface);
-    border: 1px solid #ddd;            /* imposé */
-    border-radius: var(--radius-card); /* 10px imposé */
-    margin: 20px;                       /* 20px imposé */
-    padding: 10px;                      /* 10px imposé */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px;
     box-shadow: var(--shadow);
-    animation: fadeUp .4s ease both;
+    animation: fadeUp .35s ease both;
 }
-
 .review-card .reviewer {
-    font-weight: 600;
+    font-weight: 700;
     font-size: .95rem;
     margin-bottom: .3rem;
 }
-
-.review-card .rating {
-    color: #F5A623;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    margin-bottom: .4rem;
-}
-
 .review-card .review-text {
+    font-size: .92rem;
     color: var(--text);
-    font-size: .9rem;
-    line-height: 1.6;
+    margin-bottom: .3rem;
+    line-height: 1.5;
+}
+.review-card .rating-line {
+    font-size: .92rem;
+    color: var(--text);
+}
+.review-card .stars {
+    color: #333;
+    letter-spacing: 1px;
 }
 
-/* ── Add review section ─────────────────────── */
-#add-review {
-    background: var(--surface);
-    border-radius: var(--radius-card);
-    padding: 2rem;
-    box-shadow: var(--shadow);
-    max-width: 600px;
+/* ── Add Review section ─────────────────────── */
+#add-review,
+.add-review {
+    background: var(--bg);
+    padding: 1rem 0 0;
 }
 
 #add-review h2,
-#review-form h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    margin-bottom: 1.2rem;
+.add-review h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
-/* ── Forms (login + review) ─────────────────── */
-.form-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 140px);
+/* Page add_review.html : centrage du contenu */
+.review-page-title {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text);
 }
 
 #login-form,
 #review-form,
-.add-review .form {
-    background: var(--surface);
-    border-radius: var(--radius-card);
-    padding: 2.5rem;
-    box-shadow: var(--shadow);
-    width: 100%;
-    max-width: 420px;
+.form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: .8rem;
+    max-width: 500px;
 }
 
-#login-form h2 { 
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    text-align: center;
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2rem;
+}
+
+#login-form {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    width: 100%;
+}
+
+#login-form h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
     margin-bottom: .5rem;
+    text-align: center;
 }
 
 label {
-    font-size: .88rem;
-    font-weight: 600;
+    font-size: .9rem;
+    font-weight: 700;
     color: var(--text);
     display: block;
-    margin-bottom: .25rem;
+    margin-bottom: .2rem;
 }
 
 input[type="email"],
@@ -383,100 +315,78 @@ textarea,
 select {
     width: 100%;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: .7rem 1rem;
+    border-radius: 6px;
+    padding: .6rem .8rem;
     font-family: inherit;
     font-size: .95rem;
-    background: var(--bg);
+    background: var(--surface);
     color: var(--text);
-    transition: border-color var(--transition), box-shadow var(--transition);
+    transition: border-color var(--transition);
 }
-
 input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(255,90,95,.12);
 }
-
-textarea {
-    resize: vertical;
-    min-height: 120px;
-}
+textarea { resize: vertical; min-height: 110px; }
 
 button[type="submit"] {
     background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: .75rem;
+    padding: .7rem;
     font-family: inherit;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background var(--transition), transform var(--transition);
-    margin-top: .4rem;
+    transition: background var(--transition);
+    width: 100%;
 }
+button[type="submit"]:hover { background: var(--primary-dk); }
+button[type="submit"]:disabled { background: #ccc; cursor: not-allowed; }
 
-button[type="submit"]:hover {
-    background: var(--primary-dk);
-    transform: translateY(-1px);
-}
-
-/* ── États (loading / error / empty) ────────── */
 .state-container {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 3rem 1rem;
     color: var(--text-muted);
 }
-
 .loader {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--border);
+    width: 36px;
+    height: 36px;
+    border: 3px solid #ddd;
     border-top-color: var(--primary);
     border-radius: 50%;
-    animation: spin .8s linear infinite;
+    animation: spin .75s linear infinite;
     margin: 0 auto 1rem;
 }
-
 .error-msg {
-    color: var(--primary);
-    font-weight: 600;
-    font-size: .95rem;
-    background: #FFF0F0;
-    border: 1px solid #FFD0D2;
-    border-radius: 8px;
-    padding: .7rem 1rem;
-    text-align: center;
+    color: #c0392b;
+    font-size: .9rem;
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    padding: .6rem .9rem;
+}
+.success-msg {
+    color: #276221;
+    font-size: .9rem;
+    background: #eafaf1;
+    border: 1px solid #a9dfbf;
+    border-radius: 6px;
+    padding: .6rem .9rem;
 }
 
-/* ── Animations ─────────────────────────────── */
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* ── Responsive ─────────────────────────────── */
 @media (max-width: 768px) {
     header { padding: 0 1rem; }
-    main { padding: 1rem; }
-
-    #places-list {
-        grid-template-columns: 1fr;
-    }
-
-    .place-card { margin: 10px 0; }
+    main   { padding: 1rem; }
+    #places-list { grid-template-columns: 1fr; }
+    .place-card  { margin: 10px 0; }
     .review-card { margin: 10px 0; }
-
-    #login-form { padding: 1.5rem; }
-}
-
-@media (max-width: 480px) {
-    header .logo-text { font-size: 1.3rem; }
-    .place-details h1 { font-size: 1.5rem; }
 }

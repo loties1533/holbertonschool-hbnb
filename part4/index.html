@@ -3,38 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBnB — Find your place</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <title>HBnB &mdash; Available Places</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo-text">HBnB</a>
+        <a href="index.html">
+            <img src="images/logo.png" alt="HBnB logo" class="logo">
+        </a>
+        <!--  nav avec liens index.html ET login.html -->
         <nav>
             <a href="index.html">Home</a>
+
             <a href="login.html" id="login-link" class="login-button">Login</a>
         </nav>
     </header>
 
     <main>
+        <h1 class="page-title">Available Places</h1>
+
+        <!-- Filtre par prix côté client -->
         <section id="filter">
-            <label for="price-filter">Max price per night :</label>
+            <label for="price-filter">Max Price:</label>
             <select id="price-filter">
                 <option value="10">$10</option>
                 <option value="50">$50</option>
                 <option value="100">$100</option>
-                <option value="all" selected>All prices</option>
+                <option value="all" selected>All</option>
             </select>
         </section>
 
-        <section id="places-list">
-            <!-- Populated dynamically by scripts.js -->
+        <section id="places-list" aria-label="List of available places">
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 HBnB — All rights reserved.</p>
+        <p>&copy; 2024 HBnB Evolution. All rights reserved.</p>
     </footer>
 
     <script src="scripts.js"></script>

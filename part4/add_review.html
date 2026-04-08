@@ -3,59 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBnB — Add Review</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <title>HBnB &mdash; Add Review</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo-text">HBnB</a>
+        <a href="index.html">
+            <img src="images/logo.png" alt="HBnB logo" class="logo">
+        </a>
         <nav>
             <a href="index.html">Home</a>
+            <a href="login.html" class="login-button">Login</a>
         </nav>
     </header>
 
     <main>
-        <div class="form-wrapper">
-            <form id="review-form" novalidate>
-                <h2>Add a Review</h2>
 
-                <!-- Place name injected dynamically -->
-                <p id="place-name-label" style="color:var(--text-muted); font-size:.9rem; text-align:center; margin-top:-.5rem;"></p>
+        <h1 id="review-page-title" class="review-page-title"></h1>
 
-                <div>
-                    <label for="review">Your review</label>
-                    <textarea id="review" name="review"
-                              placeholder="Describe your stay…" required></textarea>
-                </div>
 
-                <div>
-                    <label for="rating">Rating</label>
-                    <select id="rating" name="rating" required>
-                        <option value="">— Choose a rating —</option>
-                        <option value="1">⭐ 1 — Poor</option>
-                        <option value="2">⭐⭐ 2 — Fair</option>
-                        <option value="3">⭐⭐⭐ 3 — Good</option>
-                        <option value="4">⭐⭐⭐⭐ 4 — Very good</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 5 — Excellent</option>
-                    </select>
-                </div>
+        <form id="review-form" class="form" novalidate>
+            <h2>Add a Review</h2>
 
-                <div id="review-error" class="error-msg" style="display:none;"></div>
+            <div>
+                <label for="review">Your Review:</label>
+                <textarea id="review" name="review" required></textarea>
+            </div>
 
-                <button type="submit">Submit Review</button>
+            <div>
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                </select>
+            </div>
 
-                <p style="text-align:center; font-size:.85rem; color:#888;">
-                    <a id="back-to-place" href="index.html"
-                       style="color:var(--primary);">← Back to place</a>
-                </p>
-            </form>
-        </div>
+            <!-- Feedback erreur/succès injecté par scripts.js -->
+            <div id="review-feedback" role="alert" style="display:none;"></div>
+
+            <button type="submit">Submit Review</button>
+        </form>
+
+        <p style="margin-top:1rem;">
+            <a id="back-to-place" href="index.html"
+               style="color:var(--primary); font-weight:600; text-decoration:none;">
+                &larr; Back to place
+            </a>
+        </p>
     </main>
 
     <footer>
-        <p>&copy; 2024 HBnB — All rights reserved.</p>
+        <p>&copy; 2024 HBnB Evolution. All rights reserved.</p>
     </footer>
 
     <script src="scripts.js"></script>
