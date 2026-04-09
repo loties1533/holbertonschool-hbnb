@@ -3,9 +3,9 @@
 
 :root {
     --bg:          #F2F2F2;
-    --surface:     #FFFFFF;
-    --primary:     #F0A500;
-    --primary-dk:  #D4920A;
+    --surface:     #ffffff08;
+    --primary:     #f00000;
+    --primary-dk:  #d40a0a;
     --text:        #333333;
     --text-muted:  #666666;
     --border:      #dddddd;
