@@ -75,6 +75,8 @@ function initLogin() {
     const form     = document.getElementById('login-form');
     const errorBox = document.getElementById('login-error');
     if (!form) { return; }
+    const token = getCookie('token');
+    if (token) { window.location.href = 'index.html'; return; }
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -180,6 +182,14 @@ function displayPlaces(places) {
 function initPriceFilter() {
     const select = document.getElementById('price-filter');
     if (!select) { return; }
+    const options = [10, 50, 100, 'all'];
+    options.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val === 'all' ? 'All' : `$${val}`;
+        if (val === 'all') opt.selected = true;
+        select.appendChild(opt);
+    });
 
     select.addEventListener('change', () => {
         const value = select.value;
