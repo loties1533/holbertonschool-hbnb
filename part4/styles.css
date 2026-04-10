@@ -4,12 +4,12 @@
    VARIABLES — thème Slate + Teal
 ───────────────────────────────────────────── */
 :root {
-    --bg:          #0631326c;
+    --bg:          #0f1117;
     --bg-2:        #171b26;
     --surface:     #1e2333;
-    --surface-2:   #000000;
+    --surface-2:   #252b3b;
     --primary:     #2dd4bf;
-    --primary-dk:  #000000;
+    --primary-dk:  #14b8a6;
     --primary-glow:rgba(45, 212, 191, 0.18);
     --text:        #e2e8f0;
     --text-muted:  #8892a4;

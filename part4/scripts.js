@@ -214,6 +214,9 @@ function initPlace() {
         addReviewSection.style.display = token ? 'block' : 'none';
     }
 
+    const addReviewLink = document.getElementById('add-review-link');
+    if (addReviewLink) { addReviewLink.href = `add_review.html?id=${placeId}`; }
+
     fetchPlaceDetails(token, placeId);
     fetchPlaceReviews(token, placeId);
 
@@ -245,8 +248,26 @@ function displayPlaceDetails(place) {
         ? `${escapeHtml(place.owner.first_name)} ${escapeHtml(place.owner.last_name)}`
         : 'Unknown';
 
+    const amenityIcons = {
+        'wifi':    'images/icon_wifi.png',
+        'wi-fi':   'images/icon_wifi.png',
+        'bath':    'images/icon_bath.png',
+        'douche':  'images/icon_bath.png',
+        'bed':     'images/icon_bed.png',
+        'lit': 'images/icon_bed.png',
+    };
+    
+    
+
     const amenitiesStr = (place.amenities && place.amenities.length)
-        ? place.amenities.map(a => escapeHtml(a.name)).join(', ')
+        ? place.amenities.map(a => {
+            const key  = a.name.toLowerCase();
+            const icon = Object.keys(amenityIcons).find(k => key.includes(k));
+            const img  = icon
+                ? `<img src="${amenityIcons[icon]}" alt="${escapeHtml(a.name)}" style="width:20px; vertical-align:middle; margin-right:4px;">`
+                : '';
+            return `<span>${img}${escapeHtml(a.name)}</span>`;
+        }).join(' &nbsp; ')
         : 'None';
 
     container.innerHTML = `
@@ -261,6 +282,7 @@ function displayPlaceDetails(place) {
         </div>
     `;
 }
+
 
 async function fetchPlaceReviews(token, placeId) {
     const section = document.getElementById('reviews');
