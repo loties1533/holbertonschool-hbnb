@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
 
-/* ─────────────────────────────────────────────
-   VARIABLES — thème Slate + Teal
-───────────────────────────────────────────── */
 :root {
     --bg:          #0f1117;
     --bg-2:        #171b26;
@@ -117,7 +114,6 @@ main {
     letter-spacing: -.01em;
 }
 
-/* ── Filter ──────────────────────────────────── */
 #filter {
     display: flex;
     align-items: center;
@@ -158,7 +154,6 @@ main {
 }
 #price-filter option { background: var(--surface-2); }
 
-/* ── Places grid ─────────────────────────────── */
 #places-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -179,7 +174,6 @@ main {
     text-align: center;
     transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
     animation: fadeUp .35s ease both;
-    /* border: 1px solid #ddd imposé par le task — on override avec var mais garde la valeur */
     border-color: var(--border);
 }
 .place-card:hover {
@@ -225,7 +219,6 @@ main {
     color: var(--primary);
 }
 
-/* ── Place details ───────────────────────────── */
 #place-details h1 {
     font-family: 'DM Serif Display', serif;
     text-align: center;
@@ -257,7 +250,6 @@ main {
 .place-info p { margin: 0; }
 .place-info strong { color: var(--primary); font-weight: 600; }
 
-/* ── Reviews ─────────────────────────────────── */
 #reviews { margin-bottom: 1.8rem; }
 
 #reviews h2 {
@@ -302,7 +294,6 @@ main {
     letter-spacing: 2px;
 }
 
-/* ── Add Review section ──────────────────────── */
 #add-review,
 .add-review {
     background: var(--bg-2);
@@ -321,7 +312,6 @@ main {
     color: var(--text);
 }
 
-/* ── Login / Review forms ────────────────────── */
 .review-page-title {
     font-family: 'DM Serif Display', serif;
     text-align: center;
@@ -424,7 +414,6 @@ button[type="submit"]:disabled {
     box-shadow: none;
 }
 
-/* ── States ──────────────────────────────────── */
 .state-container {
     grid-column: 1 / -1;
     text-align: center;
